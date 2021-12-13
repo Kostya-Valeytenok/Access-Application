@@ -1,14 +1,24 @@
 package com.psu.accessapplication.extentions
 
+import android.app.Application
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.PointF
 import android.graphics.drawable.Drawable
+import android.net.Uri
+import android.os.Parcelable
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import com.psu.accessapplication.di.App
 import com.psu.accessapplication.model.FaceModel
 import kotlinx.coroutines.*
+import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
@@ -81,3 +91,35 @@ private fun findSimilarity(param1Value: Double, param2Value: Double): Double {
         return param1Value / param2Value
     } else param2Value / param1Value
 }
+
+fun uploadImageFromUri(uri: Uri?, context: Context): Bitmap? {
+    var bitmap: Bitmap? = null
+    try {
+        context.contentResolver.openInputStream(uri!!).use { imageInputStream ->
+            bitmap = BitmapFactory.decodeStream(imageInputStream)
+        }
+    } catch (e: IOException) {
+        println(e)
+        return bitmap
+    }
+    return bitmap
+}
+
+fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerContract(activity: FragmentActivity, callback: (Result: Result) -> Unit): ActivityResultLauncher<Input> {
+    return activity.registerForActivityResult(this) {
+        if (it != null) {
+            callback.invoke(it)
+        }
+    }
+}
+
+fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerContract(fragment: Fragment, callback: (Result: Result) -> Unit): ActivityResultLauncher<Input> {
+    return fragment.registerForActivityResult(this) {
+        if (it != null) {
+            callback.invoke(it)
+        }
+    }
+}
+
+val application: Application
+    get() = App.instance
