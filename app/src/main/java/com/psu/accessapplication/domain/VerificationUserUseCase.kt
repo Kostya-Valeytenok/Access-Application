@@ -1,7 +1,6 @@
 package com.psu.accessapplication.domain
 
 import android.graphics.Bitmap
-import com.psu.accessapplication.extentions.collectOnce
 import com.psu.accessapplication.model.Person
 import com.psu.accessapplication.tools.PersonVerification
 import dagger.hilt.android.scopes.ViewModelScoped
@@ -16,6 +15,6 @@ class VerificationUserUseCase @Inject constructor (val personVerification: Perso
     }
 
     suspend fun analyzeImage(personImage: Bitmap) {
-        personVerification.analyzeImage(personImage).collectOnce { }
+        personVerification.analyzeImageAsync(personImage).await()
     }
 }

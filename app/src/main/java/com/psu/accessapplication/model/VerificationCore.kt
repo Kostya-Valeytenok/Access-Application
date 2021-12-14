@@ -7,6 +7,7 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetector
 import com.psu.accessapplication.extentions.compare
 import com.psu.accessapplication.extentions.nullableToResult
+import com.psu.accessapplication.tools.AnalyzeError
 import com.psu.accessapplication.tools.CoroutineWorker
 import com.psu.accessapplication.tools.ImageTransformManager
 import kotlinx.coroutines.*
@@ -31,11 +32,16 @@ class VerificationCore @Inject constructor(
         val points = mutableListOf<PointF>()
         detector.process(image).addOnSuccessListener { faces ->
 
+            println("step 1 bas image was analyzed")
+
             faces.first().allContours.forEach {
                 points.addAll(it.points)
             }
 
-            CoroutineWorker.launch { bitmapFlow.emit(personPhoto.transformImageToFaceImage(points)) }
+            CoroutineWorker.launch {
+                println("send Transform image")
+                bitmapFlow.emit(personPhoto.transformImageToFaceImage(points))
+            }
         }.addOnFailureListener {
             CoroutineWorker.launch { bitmapFlow.emit(Result.failure(it)) }
         }
@@ -67,6 +73,9 @@ class VerificationCore @Inject constructor(
                 println("end")
                 result.emit(person.nullableToResult())
             }
+        }.addOnFailureListener {
+            println("Transformed image Analyze Error")
+            CoroutineWorker.launch { result.emit(Result.failure(AnalyzeError())) }
         }
 
         return result

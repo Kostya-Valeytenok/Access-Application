@@ -9,6 +9,10 @@ suspend fun <T> asyncJob(job: suspend () -> T): Deferred<T> = withContext(Dispat
     return@withContext async { return@async job.invoke() }
 }
 
+suspend fun <T> launchJob(job: suspend () -> Unit) = withContext(Dispatchers.Default) {
+    return@withContext async { return@async job.invoke() }
+}
+
 suspend fun updateUI(job: suspend () -> Unit) = withContext(Dispatchers.Main) {
     job.invoke()
 }

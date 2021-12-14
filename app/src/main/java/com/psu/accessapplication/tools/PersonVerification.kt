@@ -1,12 +1,14 @@
 package com.psu.accessapplication.tools
 
 import android.graphics.Bitmap
+import com.psu.accessapplication.extentions.asyncJob
 import com.psu.accessapplication.extentions.collectOnce
 import com.psu.accessapplication.model.FaceModel
 import com.psu.accessapplication.model.Person
 import com.psu.accessapplication.model.VerificationCore
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -18,33 +20,31 @@ class PersonVerification @Inject constructor(val core: VerificationCore) {
         withContext(Dispatchers.Default) {
             val person = MutableSharedFlow<Result<Person>>()
 
-            core.getPersonImage(personImage).collectOnce {
+            core.getPersonImage(personImage).first {
+                println("step 1: End ")
                 it.onSuccess {
+                    println("step 2: Transformed image has been got")
                     findPerson(it, person)
                     println("pre-return")
-                }
-                it.onFailure {
+                }.onFailure {
                     println("AnalyzeError")
                     person.emit(Result.failure(AnalyzeError()))
                 }
+                true
             }
             println("return")
             return@withContext person
         }
 
-    suspend fun analyzeImage(personImage: Bitmap): MutableSharedFlow<Result<FaceModel>> {
-        val person = MutableSharedFlow<Result<FaceModel>>()
-        core.getPersonImage(personImage).collectOnce {
+    suspend fun analyzeImageAsync(personImage: Bitmap): Deferred<Result<FaceModel>> = asyncJob {
+        val transformedImage = core.getPersonImage(personImage).firstOrNull()
+        transformedImage?.let {
             it.onSuccess {
-                core.analyzeImage(it).collectOnce {
-                    person.emit(it)
-                }
+                return@asyncJob (core.analyzeImage(it).firstOrNull() ?: Result.failure(AnalyzeError()))
             }
-            it.onFailure {
-                person.emit(Result.failure(AnalyzeError()))
-            }
+            it.onFailure { return@asyncJob (Result.failure(AnalyzeError())) }
         }
-        return person
+        return@asyncJob (Result.failure(AnalyzeError()))
     }
 
     private suspend fun findPerson(

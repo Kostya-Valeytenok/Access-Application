@@ -34,19 +34,32 @@ class DashboardFragment : Fragment() {
         "https://avatars.mds.yandex.net/get-zen_doc/249065/pub_5ce393e9da7a8100b3ddbaf5_5ce39b780a0d8b00b24d1d5c/scale_1200"
     private val dashboardViewModel: DashboardViewModel by viewModels()
     private var _binding: FragmentDashboardBinding? = null
-    @Inject lateinit var downloadManager: DownloadManager
+    @Inject
+    lateinit var downloadManager: DownloadManager
+
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
     var uriT: Uri? = null
     lateinit var imageLoadJob: Deferred<Result<Bitmap>>
 
-    val imagePicker = EmptyInputResultContract<Uri>(ChoosePictureActivity::class.java).registerContract(this) {
-        launch {
-            val image = uploadImageFromUri(it, requireContext())
-            updateUI { binding.imageView.setImageBitmap(image) }
+    val imagePicker =
+        EmptyInputResultContract<Uri>(ChoosePictureActivity::class.java).registerContract(this) {
+            launch {
+                val image = uploadImageFromUri(it, requireContext())
+                launch {
+                    dashboardViewModel.analyzeImage(image!!)
+                   /* val person = dashboardViewModel.chekUser(image)
+                    if (person == null) showErrorMessage()
+                    else showFindMessage(person)*/
+                }
+                updateUI {
+                    if (image.notNull()) {
+                        binding.photoView.invisible()
+                    } else binding.photoView.visible()
+                }
+            }
         }
-    }
 
     fun checkBitmap(uri: Uri, bitmap: Bitmap?): Bitmap? {
         if (bitmap == null) return null
@@ -94,17 +107,17 @@ class DashboardFragment : Fragment() {
         _binding?.photoView?.setOnClickListener {
             imagePicker.launch()
         }
-      /*  launch {
-            imageLoadJob.await()
-                .onSuccess {
-                    // dashboardViewModel.analyzeImage(it)
-
-                    val person = dashboardViewModel.chekUser(it)
-                    if (person == null) showErrorMessage()
-                    else showFindMessage(person)
-                }
-                .onFailure { println(it) }
-        }*/
+        /*  launch {
+              imageLoadJob.await()
+                  .onSuccess {
+                      // dashboardViewModel.analyzeImage(it)
+  
+                      val person = dashboardViewModel.chekUser(it)
+                      if (person == null) showErrorMessage()
+                      else showFindMessage(person)
+                  }
+                  .onFailure { println(it) }
+          }*/
         launch {
             dashboardViewModel.photo.collect {
                 binding.imageView.setImageBitmap(it)

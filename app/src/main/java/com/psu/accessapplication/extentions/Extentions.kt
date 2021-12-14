@@ -8,6 +8,7 @@ import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Parcelable
+import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.core.content.ContextCompat
@@ -120,6 +121,23 @@ fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerC
         }
     }
 }
+
+fun <T> T?.notNull(): Boolean {
+    return this != null
+}
+
+fun View.gone() {
+    this.visibility = View.GONE
+}
+
+fun View.visible() {
+    this.visibility = View.VISIBLE
+}
+
+fun View.invisible() {
+    this.visibility = View.INVISIBLE
+}
+
 
 val application: Application
     get() = App.instance
