@@ -8,14 +8,22 @@ import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Parcelable
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.viewbinding.ViewBinding
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
+import com.psu.accessapplication.R
 import com.psu.accessapplication.di.App
 import com.psu.accessapplication.model.FaceModel
 import kotlinx.coroutines.*
@@ -23,7 +31,9 @@ import java.io.IOException
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.math.abs
+import kotlin.math.roundToInt
 import kotlin.math.sqrt
+import kotlin.reflect.KClass
 
 fun Fragment.launch(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -138,6 +148,42 @@ fun View.invisible() {
     this.visibility = View.INVISIBLE
 }
 
-
 val application: Application
     get() = App.instance
+
+inline fun <Binding : ViewBinding> KClass<Binding>.inflate(inflater: LayoutInflater, parent: ViewGroup?, attachToRoot: Boolean): Binding {
+    return java.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java).invoke(null, inflater, parent, attachToRoot) as Binding
+}
+
+inline fun <Binding : ViewBinding> KClass<Binding>.bind(view: View): Binding {
+    return java.getMethod("bind", View::class.java).invoke(null, view) as Binding
+}
+
+fun ImageView.loadImage(url: String) {
+    if (url.isNotBlank()) {
+        Glide.with(context)
+            .asBitmap()
+            .load(url)
+            .diskCacheStrategy(DiskCacheStrategy.AUTOMATIC)
+            .error(R.drawable.avatar_placeholder)
+            .into(this)
+    } else {
+        setImageResource(R.drawable.avatar_placeholder)
+    }
+}
+
+fun Context.convertPxToDp(px: Int): Int {
+    return (px / resources.displayMetrics.density).roundToInt()
+}
+
+fun Context.convertDpToPixel(dp: Int): Int {
+    return (dp * resources.displayMetrics.density).roundToInt()
+}
+
+fun Context.convertSpToPixel(sp: Int): Int {
+    return (sp * resources.displayMetrics.scaledDensity).roundToInt()
+}
+
+fun Context.getDimension(@DimenRes dimen: Int): Float {
+    return resources.getDimension(dimen)
+}

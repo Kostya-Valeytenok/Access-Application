@@ -4,6 +4,6 @@ data class Person(
     val id: String = "",
     val firstName: String = "",
     val secondName: String = "",
-    private val personImageUrl: String = "",
+    val personImageUrl: String = "",
     val face: FaceModel
 )

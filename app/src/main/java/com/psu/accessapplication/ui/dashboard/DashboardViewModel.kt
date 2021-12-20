@@ -8,7 +8,6 @@ import com.psu.accessapplication.model.Person
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -16,17 +15,20 @@ import javax.inject.Inject
 class DashboardViewModel @Inject constructor (val userVerification: VerificationUserUseCase) : ViewModel() {
 
     val photo = MutableStateFlow<Bitmap?>(null)
+    val loadingStatus = MutableStateFlow(false)
 
     suspend fun chekUser(personImage: Bitmap?): Person? = viewModelScope.async {
+        loadingStatus.emit(true)
         if (personImage == null) return@async null
         photo.emit(null)
         var person: Person? = null
-        val result = userVerification.verifyUser(personImage).firstOrNull()
-        result?.onSuccess {
+        val result = userVerification.verifyUser(personImage).await()
+        result.onSuccess {
             photo.emit(personImage)
             person = it
-        }?.onFailure { println("failed") }
+        }.onFailure { println("failed") }
         println("go next")
+        loadingStatus.emit(false)
         return@async person
     }.await()
 

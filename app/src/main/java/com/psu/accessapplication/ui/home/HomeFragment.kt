@@ -4,13 +4,21 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import com.psu.accessapplication.R
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.mikepenz.fastadapter.FastAdapter
+import com.mikepenz.fastadapter.GenericItem
+import com.mikepenz.fastadapter.adapters.GenericItemAdapter
 import com.psu.accessapplication.databinding.FragmentHomeBinding
+import com.psu.accessapplication.extentions.launch
+import com.psu.accessapplication.extentions.updateUI
+import com.psu.accessapplication.items.PersonItem
+import com.psu.accessapplication.items.SpaceItem
+import com.psu.accessapplication.tools.Dimension
+import com.psu.accessapplication.tools.PersonDataCache
 
+@ExperimentalStdlibApi
 class HomeFragment : Fragment() {
 
     private lateinit var homeViewModel: HomeViewModel
@@ -19,6 +27,9 @@ class HomeFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
+
+    private val personItemAdapter = GenericItemAdapter()
+    private val personAdapter = FastAdapter.with(personItemAdapter)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,11 +42,32 @@ class HomeFragment : Fragment() {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textHome
-        homeViewModel.text.observe(viewLifecycleOwner, Observer {
-            textView.text = it
-        })
+        binding.initLists()
+
         return root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        personItemAdapter.setPersonItems()
+    }
+
+    private fun FragmentHomeBinding.initLists() {
+        personList.layoutManager = LinearLayoutManager(context)
+        personList.adapter = personAdapter
+    }
+
+    private fun GenericItemAdapter.setPersonItems() = launch {
+        val personsList = getPersonList()
+        updateUI { setNewList(personsList) }
+    }
+
+    private fun getPersonList(): List<GenericItem> = buildList {
+        add(SpaceItem(Dimension.Dp(8)))
+        PersonDataCache.cache.forEach {
+            add(PersonItem(it))
+            add(SpaceItem(Dimension.Dp(8)))
+        }
     }
 
     override fun onDestroyView() {

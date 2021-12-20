@@ -21,7 +21,6 @@ import com.psu.accessapplication.tools.EmptyInputResultContract
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
@@ -32,7 +31,7 @@ class DashboardFragment : Fragment() {
     var currentPhotoPath: String = ""
     val imageUrl =
         "https://avatars.mds.yandex.net/get-zen_doc/249065/pub_5ce393e9da7a8100b3ddbaf5_5ce39b780a0d8b00b24d1d5c/scale_1200"
-    private val dashboardViewModel: DashboardViewModel by viewModels()
+    private val viewModel: DashboardViewModel by viewModels()
     private var _binding: FragmentDashboardBinding? = null
     @Inject
     lateinit var downloadManager: DownloadManager
@@ -48,10 +47,12 @@ class DashboardFragment : Fragment() {
             launch {
                 val image = uploadImageFromUri(it, requireContext())
                 launch {
-                    dashboardViewModel.analyzeImage(image!!)
-                   /* val person = dashboardViewModel.chekUser(image)
+                    val person = viewModel.chekUser(image)
                     if (person == null) showErrorMessage()
-                    else showFindMessage(person)*/
+                    else {
+                        showFindMessage(person)
+                        binding.personPhoto.loadImage(person.personImageUrl)
+                    }
                 }
                 updateUI {
                     if (image.notNull()) {
@@ -119,9 +120,7 @@ class DashboardFragment : Fragment() {
                   .onFailure { println(it) }
           }*/
         launch {
-            dashboardViewModel.photo.collect {
-                binding.imageView.setImageBitmap(it)
-            }
+            binding.progressBar.subscribeOnWorkingStatus(viewModel.loadingStatus)
         }
     }
 

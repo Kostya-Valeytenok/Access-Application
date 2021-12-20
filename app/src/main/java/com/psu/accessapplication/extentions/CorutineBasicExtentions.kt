@@ -1,7 +1,9 @@
 package com.psu.accessapplication.extentions
 
-import kotlinx.coroutines.*
+import android.view.View
+import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import java.lang.NullPointerException
 
@@ -36,4 +38,11 @@ suspend fun <T> Result<T>.updateUIIfSuccessFull(updateUIAction: (T) -> Unit): Re
 fun <T> T?.nullableToResult(): Result<T> {
     return if (this == null) Result.failure(NullPointerException())
     else Result.success(this)
+}
+
+suspend fun View.subscribeOnWorkingStatus(loadingStatus: MutableStateFlow<Boolean>) {
+    loadingStatus.collect { isWorkInProcesses ->
+        if (isWorkInProcesses) updateUI { this.visible() }
+        else updateUI { this.gone() }
+    }
 }

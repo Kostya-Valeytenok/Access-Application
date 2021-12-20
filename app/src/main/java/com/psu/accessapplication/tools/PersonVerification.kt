@@ -3,6 +3,7 @@ package com.psu.accessapplication.tools
 import android.graphics.Bitmap
 import com.psu.accessapplication.extentions.asyncJob
 import com.psu.accessapplication.extentions.collectOnce
+import com.psu.accessapplication.extentions.nullableToResult
 import com.psu.accessapplication.model.FaceModel
 import com.psu.accessapplication.model.Person
 import com.psu.accessapplication.model.VerificationCore
@@ -16,29 +17,23 @@ import javax.inject.Singleton
 @Singleton
 class PersonVerification @Inject constructor(val core: VerificationCore) {
 
-    suspend fun checkPerson(personImage: Bitmap): MutableSharedFlow<Result<Person>> =
-        withContext(Dispatchers.Default) {
-            val person = MutableSharedFlow<Result<Person>>()
-
-            core.getPersonImage(personImage).first {
-                println("step 1: End ")
-                it.onSuccess {
-                    println("step 2: Transformed image has been got")
-                    findPerson(it, person)
-                    println("pre-return")
-                }.onFailure {
-                    println("AnalyzeError")
-                    person.emit(Result.failure(AnalyzeError()))
+    suspend fun checkPerson(personImage: Bitmap):Deferred<Result<Person>> = asyncJob {
+            var result:Result<Person> = Result.failure(AnalyzeError())
+            val personFaceImage  = core.getPersonImage(personImage).await()
+            personFaceImage
+                .onSuccess {
+                   findPerson(it)
+                       .nullableToResult()
+                       .onSuccess { result = it }
+                       .onFailure { result = Result.failure(AnalyzeError()) }
                 }
-                true
-            }
-            println("return")
-            return@withContext person
+                .onFailure { result = Result.failure(AnalyzeError()) }
+            return@asyncJob result
         }
 
     suspend fun analyzeImageAsync(personImage: Bitmap): Deferred<Result<FaceModel>> = asyncJob {
-        val transformedImage = core.getPersonImage(personImage).firstOrNull()
-        transformedImage?.let {
+        val transformedImage = core.getPersonImage(personImage).await()
+        transformedImage.let {
             it.onSuccess {
                 return@asyncJob (core.analyzeImage(it).firstOrNull() ?: Result.failure(AnalyzeError()))
             }
@@ -47,13 +42,9 @@ class PersonVerification @Inject constructor(val core: VerificationCore) {
         return@asyncJob (Result.failure(AnalyzeError()))
     }
 
-    private suspend fun findPerson(
-        personImage: Bitmap,
-        resultProvider: MutableSharedFlow<Result<Person>>
-    ) {
-        core.findPerson(personImage, getPersonData()).collectOnce {
-            resultProvider.emit(it)
-        }
+    private suspend fun findPerson(personImage: Bitmap
+    ): Result<Person>? {
+       return core.findPerson(personImage, getPersonData()).firstOrNull()
     }
 
     protected open fun getPersonData(): MutableList<Person> {

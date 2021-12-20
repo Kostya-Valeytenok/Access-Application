@@ -10,7 +10,7 @@ import com.psu.accessapplication.extentions.nullableToResult
 import com.psu.accessapplication.tools.AnalyzeError
 import com.psu.accessapplication.tools.CoroutineWorker
 import com.psu.accessapplication.tools.ImageTransformManager
-import kotlinx.coroutines.*
+import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
 import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
 
@@ -26,26 +26,23 @@ class VerificationCore @Inject constructor(
     fun init() {
     }
 
-    suspend fun getPersonImage(personPhoto: Bitmap): MutableSharedFlow<Result<Bitmap>> {
-        val bitmapFlow = MutableSharedFlow<Result<Bitmap>>()
+    suspend fun getPersonImage(personPhoto: Bitmap): Deferred<Result<Bitmap>> {
+        val result: CompletableDeferred<Result<Bitmap>> = CompletableDeferred()
         val image = InputImage.fromBitmap(personPhoto, 0)
         val points = mutableListOf<PointF>()
         detector.process(image).addOnSuccessListener { faces ->
-
             println("step 1 bas image was analyzed")
 
             faces.first().allContours.forEach {
                 points.addAll(it.points)
             }
-
             CoroutineWorker.launch {
-                println("send Transform image")
-                bitmapFlow.emit(personPhoto.transformImageToFaceImage(points))
+                result.complete(personPhoto.transformImageToFaceImage(points))
             }
         }.addOnFailureListener {
-            CoroutineWorker.launch { bitmapFlow.emit(Result.failure(it)) }
+            result.complete(Result.failure(it))
         }
-        return bitmapFlow
+        return result
     }
 
     suspend fun analyzeImage(personPhoto: Bitmap): MutableSharedFlow<Result<FaceModel>> {
