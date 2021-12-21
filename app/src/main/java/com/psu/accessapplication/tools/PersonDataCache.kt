@@ -1,17 +1,17 @@
 package com.psu.accessapplication.tools
 
 import com.psu.accessapplication.model.Person
+import kotlinx.coroutines.flow.MutableStateFlow
 
 object PersonDataCache {
 
-    val cache = mutableListOf<Person>()
+    val cache = MutableStateFlow(listOf<Person>())
 
     fun init(persons: List<Person>) {
-        clean()
-        cache.addAll(persons)
+        CoroutineWorker.launch { cache.emit(persons) }
     }
 
     fun clean() {
-        cache.clear()
+        CoroutineWorker.launch { cache.emit(emptyList()) }
     }
 }

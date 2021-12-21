@@ -63,6 +63,12 @@ class VerificationCore @Inject constructor(
         detector.process(image).addOnSuccessListener { faces ->
             println("analyze Image \n")
 
+            println("Contours \n")
+
+            faces.first().allContours.forEach {
+                println("type ${it.faceContourType} \n\n ${it.points}")
+            }
+
             CoroutineWorker.launch {
                 val person = faces.first()
                     .analyze()

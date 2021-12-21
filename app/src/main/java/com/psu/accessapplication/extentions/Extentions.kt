@@ -8,6 +8,7 @@ import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Parcelable
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,6 +17,8 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
+import androidx.core.view.doOnAttach
+import androidx.core.view.doOnDetach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LifecycleOwner
@@ -186,4 +189,24 @@ fun Context.convertSpToPixel(sp: Int): Int {
 
 fun Context.getDimension(@DimenRes dimen: Int): Float {
     return resources.getDimension(dimen)
+}
+
+fun View.doWhileAttached(block: suspend CoroutineScope.() -> Unit) {
+    val coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+
+    doOnAttach {
+        coroutineScope.launch(NoCrashCoroutineExceptionHandler, block = block)
+        doOnDetach {
+            coroutineScope.cancel()
+        }
+    }
+}
+
+val NoCrashCoroutineExceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
+    println("failed")
+    Log.e(
+        throwable.cause.toString(),
+        throwable.message,
+        throwable
+    )
 }

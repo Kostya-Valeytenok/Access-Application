@@ -69,4 +69,8 @@ dependencies {
     implementation "com.mikepenz:fastadapter-extensions-binding:5.5.1"
     implementation "com.mikepenz:fastadapter-extensions-swipe:5.5.1"
     implementation "com.mikepenz:fastadapter-extensions-diff:5.5.1"
+
+    implementation "androidx.room:room-runtime:2.4.0"
+    kapt "androidx.room:room-compiler:2.4.0"
+    implementation "androidx.room:room-ktx:2.4.0"
 }

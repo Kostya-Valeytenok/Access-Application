@@ -48,7 +48,7 @@ class PersonVerification @Inject constructor(val core: VerificationCore) {
     }
 
     protected open fun getPersonData(): MutableList<Person> {
-        return PersonDataCache.cache
+        return PersonDataCache.cache.value.toMutableList()
     }
 
     final fun init(persons: List<Person>) {

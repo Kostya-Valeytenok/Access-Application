@@ -1,13 +1,22 @@
 package com.psu.accessapplication.di
 
 import android.app.Application
+import android.content.Context
 import com.psu.accessapplication.model.FaceModel
 import com.psu.accessapplication.model.Person
+import com.psu.accessapplication.repository.AppDatabase
+import com.psu.accessapplication.tools.AbstractPreferences
+import com.psu.accessapplication.tools.CoroutineWorker
 import com.psu.accessapplication.tools.PersonDataCache
+import com.psu.accessapplication.tools.Preferences
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.flow.collect
+import javax.inject.Inject
 
 @HiltAndroidApp
 class App : Application() {
+
+    @Inject lateinit var bd: AppDatabase
 
     companion object {
         lateinit var instance: Application
@@ -16,14 +25,28 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        PersonDataCache.init(getPersons())
+        CoroutineWorker.launch {
+            if (Preferences.isFirstLaunch) {
+                Preferences.isFirstLaunch = false
+                getPersons().forEach {
+                    bd.persons().insert(it)
+                }
+            }
+            bd.persons().allRX.collect {
+                PersonDataCache.init(it)
+            }
+        }
+    }
+
+    override fun attachBaseContext(base: Context) {
+        AbstractPreferences.init(base)
+        super.attachBaseContext(base)
     }
 
     @OptIn(ExperimentalStdlibApi::class)
     fun getPersons() = buildList<Person> {
         add(
             Person(
-                id = "1",
                 firstName = "Olga",
                 secondName = "Mentova",
                 personImageUrl = "https://shpilki.net/wp-content/uploads/ryzhevolosym-devushkam-dlya-tatuazha-mozhno-smelo-vybirat-teplye-ottenki-korichnevogo.jpg",
@@ -41,7 +64,6 @@ class App : Application() {
 
         add(
             Person(
-                id = "2",
                 firstName = "Nila",
                 secondName = "Melon",
                 personImageUrl = "https://i.pinimg.com/originals/c5/db/e1/c5dbe1565cf7452bf56cecbab1d062d4.jpg",
@@ -58,7 +80,6 @@ class App : Application() {
         )
         add(
             Person(
-                id = "3",
                 firstName = "Alla",
                 secondName = "Terrova",
                 personImageUrl = "https://pbs.twimg.com/media/Dx-8TiWX0AAZOpw.jpg:large",
@@ -75,7 +96,6 @@ class App : Application() {
         )
         add(
             Person(
-                id = "4",
                 firstName = "Lilia",
                 secondName = "Navi",
                 personImageUrl = "https://www.meme-arsenal.com/memes/b08d2860e80a1e124997a1fc0b16093a.jpg",
@@ -93,7 +113,6 @@ class App : Application() {
 
         add(
             Person(
-                id = "5",
                 firstName = "Lena",
                 secondName = "Kosta",
                 personImageUrl = "https://avatars.mds.yandex.net/get-zen_doc/249065/pub_5ce393e9da7a8100b3ddbaf5_5ce39b780a0d8b00b24d1d5c/scale_1200",

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.bumptech.glide.Glide
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter
@@ -15,8 +16,10 @@ import com.psu.accessapplication.extentions.launch
 import com.psu.accessapplication.extentions.updateUI
 import com.psu.accessapplication.items.PersonItem
 import com.psu.accessapplication.items.SpaceItem
+import com.psu.accessapplication.model.Person
 import com.psu.accessapplication.tools.Dimension
 import com.psu.accessapplication.tools.PersonDataCache
+import kotlinx.coroutines.flow.collect
 
 @ExperimentalStdlibApi
 class HomeFragment : Fragment() {
@@ -58,14 +61,16 @@ class HomeFragment : Fragment() {
     }
 
     private fun GenericItemAdapter.setPersonItems() = launch {
-        val personsList = getPersonList()
-        updateUI { setNewList(personsList) }
+        PersonDataCache.cache.collect { persons ->
+            val personsList = persons.getPersonList()
+            updateUI { setNewList(personsList) }
+        }
     }
 
-    private fun getPersonList(): List<GenericItem> = buildList {
+    private fun List<Person>.getPersonList(): List<GenericItem> = buildList {
         add(SpaceItem(Dimension.Dp(8)))
-        PersonDataCache.cache.forEach {
-            add(PersonItem(it))
+        this@getPersonList.forEach {
+            add(PersonItem(it, Glide.with(requireActivity().applicationContext)))
             add(SpaceItem(Dimension.Dp(8)))
         }
     }
