@@ -9,7 +9,7 @@ import com.psu.accessapplication.repository.dao.personDao
     entities = [
         Person::class
     ],
-    version = 26
+    version = 27
 
 )
 abstract class AppDatabase : RoomDatabase() {

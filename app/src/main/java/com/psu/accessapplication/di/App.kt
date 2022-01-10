@@ -107,7 +107,9 @@ class App : Application() {
                     mouthWidth = 51.73,
                     noseAndMouthDistance = 44.15,
                     rEyeAndNoseDistance = 51.981,
-                    lEyeAndNoseDistance = 72.531
+                    lEyeAndNoseDistance = 72.531,
+                    faceHeight = 165.0,
+                    faceWidth = 136.0
                 )
             )
         )

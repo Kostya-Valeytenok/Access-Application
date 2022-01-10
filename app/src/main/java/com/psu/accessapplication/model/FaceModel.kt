@@ -7,7 +7,9 @@ data class FaceModel(
     val mouthWidth: Double? = null,
     val noseAndMouthDistance: Double? = null,
     val lEyeAndNoseDistance: Double? = null,
-    val rEyeAndNoseDistance: Double? = null
+    val rEyeAndNoseDistance: Double? = null,
+    val faceHeight: Double? = null,
+    val faceWidth: Double? = null
 ) {
     val modelData: String
         get() = """
@@ -19,5 +21,7 @@ data class FaceModel(
             distance between nose and mouth: = $noseAndMouthDistance
             distance between r eye and nose =  $rEyeAndNoseDistance
             distance between left eye and nose = $lEyeAndNoseDistance
+            face height: = $faceHeight
+            face width: = $faceWidth
         """.trimIndent()
 }

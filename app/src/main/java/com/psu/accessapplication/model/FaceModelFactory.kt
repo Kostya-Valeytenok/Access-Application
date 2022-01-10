@@ -1,15 +1,21 @@
 package com.psu.accessapplication.model
 
+import com.google.mlkit.vision.face.FaceContour
 import com.google.mlkit.vision.face.FaceLandmark
 import com.psu.accessapplication.extentions.asyncJob
 import com.psu.accessapplication.extentions.distance
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class FaceModelFactory @Inject constructor() {
 
-    suspend fun createFaceModel(commonFaceParam: List<FaceLandmark>): FaceModel {
+    suspend fun createFaceModel(
+        commonFaceParam: List<FaceLandmark>,
+        faceContours: List<FaceContour>
+    ): FaceModel = withContext(Dispatchers.Default) {
         val findEyesDistanceTask = asyncJob { commonFaceParam.getDistanceBetweenEyes() }
         val findLEyeAndMouseDistance = asyncJob { commonFaceParam.getDistanceBetweenLEyeMouth() }
         val findREyeAndMouseDistance = asyncJob { commonFaceParam.getDistanceBetweenREyeMouth() }
@@ -17,7 +23,9 @@ class FaceModelFactory @Inject constructor() {
         val findLEyeAndNoseDistanceTask = asyncJob { commonFaceParam.getDistanceBetweenLEyeNose() }
         val findREyeAndNoseDistanceTask = asyncJob { commonFaceParam.getDistanceBetweenREyeNose() }
         val findMouseWeightTask = asyncJob { commonFaceParam.getMouthWidth() }
-        return FaceModel(
+        val findFaceWidthTask = asyncJob { faceContours.getFaceWidth() }
+        val findFaceHeightTask = asyncJob { faceContours.getFaceHeight() }
+        return@withContext FaceModel(
             eyesDistance = findEyesDistanceTask.await(),
             lEyeAndMouthDistance = findLEyeAndMouseDistance.await(),
             rEyeAndMouthDistance = findREyeAndMouseDistance.await(),
@@ -25,6 +33,8 @@ class FaceModelFactory @Inject constructor() {
             noseAndMouthDistance = findNoseAndMouseDistanceTask.await(),
             lEyeAndNoseDistance = findLEyeAndNoseDistanceTask.await(),
             rEyeAndNoseDistance = findREyeAndNoseDistanceTask.await(),
+            faceWidth = findFaceWidthTask.await(),
+            faceHeight = findFaceHeightTask.await()
         )
     }
 
@@ -62,5 +72,17 @@ class FaceModelFactory @Inject constructor() {
         return if (firstFaceObject != null && secondFaceObject != null) {
             firstFaceObject.position.distance(secondFaceObject.position)
         } else null
+    }
+
+    private fun List<FaceContour>.getFaceWidth(): Double? {
+        val param = find { it.faceContourType == FaceContour.FACE } ?: return null
+        val sortedParam = param.points.sortedBy { it.x }
+        return sortedParam[sortedParam.lastIndex].x.toDouble() - sortedParam[0].x.toDouble()
+    }
+
+    private fun List<FaceContour>.getFaceHeight(): Double? {
+        val param = find { it.faceContourType == FaceContour.FACE } ?: return null
+        val sortedParam = param.points.sortedBy { it.y }
+        return sortedParam[sortedParam.lastIndex].y.toDouble() - sortedParam[0].y.toDouble()
     }
 }

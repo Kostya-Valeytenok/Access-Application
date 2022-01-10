@@ -82,19 +82,21 @@ fun FaceModel.compare(face: FaceModel): Double {
         percentageOfSimilarity += result
         steps += 1
     }
-    eyesDistance.compareAttribute(face.eyesDistance, resultAction)
-    rEyeAndNoseDistance.compareAttribute(face.rEyeAndNoseDistance, resultAction)
-    lEyeAndNoseDistance.compareAttribute(face.lEyeAndNoseDistance, resultAction)
-    noseAndMouthDistance.compareAttribute(face.noseAndMouthDistance, resultAction)
-    mouthWidth.compareAttribute(face.mouthWidth, resultAction)
-    lEyeAndMouthDistance.compareAttribute(face.lEyeAndMouthDistance, resultAction)
-    rEyeAndMouthDistance.compareAttribute(face.rEyeAndMouthDistance, resultAction)
+    eyesDistance.compareAttributeWith(face.eyesDistance, result = resultAction)
+    rEyeAndNoseDistance.compareAttributeWith(face.rEyeAndNoseDistance, result = resultAction)
+    lEyeAndNoseDistance.compareAttributeWith(face.lEyeAndNoseDistance, result = resultAction)
+    noseAndMouthDistance.compareAttributeWith(face.noseAndMouthDistance, resultAction)
+    mouthWidth.compareAttributeWith(face.mouthWidth, result = resultAction)
+    lEyeAndMouthDistance.compareAttributeWith(face.lEyeAndMouthDistance, result = resultAction)
+    rEyeAndMouthDistance.compareAttributeWith(face.rEyeAndMouthDistance, result = resultAction)
+    faceWidth.compareAttributeWith(face.faceWidth, result = resultAction)
+    faceHeight.compareAttributeWith(face.faceHeight, result = resultAction)
     if (steps == 0)
         return 0.0
     return 100 - abs((1 - (percentageOfSimilarity / steps))) * 100
 }
 
-private fun Double?.compareAttribute(value: Double?, result: (Double) -> Unit) {
+private fun Double?.compareAttributeWith(value: Double?, result: (Double) -> Unit) {
     if (this != null && value != null) {
         result.invoke(findSimilarity(this, value))
     }
