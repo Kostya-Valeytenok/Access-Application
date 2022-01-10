@@ -30,7 +30,7 @@ class DashboardFragment : Fragment() {
 
     var currentPhotoPath: String = ""
     val imageUrl =
-        "https://avatars.mds.yandex.net/get-zen_doc/249065/pub_5ce393e9da7a8100b3ddbaf5_5ce39b780a0d8b00b24d1d5c/scale_1200"
+        "https://www.meme-arsenal.com/memes/b08d2860e80a1e124997a1fc0b16093a.jpg"
     private val viewModel: DashboardViewModel by viewModels()
     private var _binding: FragmentDashboardBinding? = null
     @Inject
@@ -112,7 +112,7 @@ class DashboardFragment : Fragment() {
               imageLoadJob.await()
                   .onSuccess {
                       // dashboardViewModel.analyzeImage(it)
-  
+
                       val person = dashboardViewModel.chekUser(it)
                       if (person == null) showErrorMessage()
                       else showFindMessage(person)

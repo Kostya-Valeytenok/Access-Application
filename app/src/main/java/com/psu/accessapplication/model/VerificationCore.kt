@@ -85,7 +85,10 @@ class VerificationCore @Inject constructor(
     }
 
     private suspend fun Face.analyze(): FaceModel {
-        val face = faceModelFactory.createFaceModel(allLandmarks)
+        val face = faceModelFactory.createFaceModel(
+            commonFaceParam = allLandmarks,
+            faceContours = allContours
+        )
         println(face.modelData)
         return face
     }
@@ -104,9 +107,9 @@ class VerificationCore @Inject constructor(
 
     private fun FaceModel.compareWithPersons(scope: CoroutineScope, persons: List<Person>): MutableList<Deferred<Pair<Double, Person>>> {
         val taskList = mutableListOf<Deferred<Pair<Double, Person>>>()
-        persons.forEach { persons ->
+        persons.forEach { person ->
             taskList.add(
-                scope.async { Pair(compare(persons.face), persons) }
+                scope.async { Pair(compare(person.face), person) }
             )
         }
         return taskList
