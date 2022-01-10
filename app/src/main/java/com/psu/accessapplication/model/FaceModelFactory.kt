@@ -19,10 +19,10 @@ class FaceModelFactory @Inject constructor() {
         val findMouseWeightTask = asyncJob { commonFaceParam.getMouthWidth() }
         return FaceModel(
             eyesDistance = findEyesDistanceTask.await(),
-            lEyeAndMouseDistance = findLEyeAndMouseDistance.await(),
-            rEyeAndMouseDistance = findREyeAndMouseDistance.await(),
+            lEyeAndMouthDistance = findLEyeAndMouseDistance.await(),
+            rEyeAndMouthDistance = findREyeAndMouseDistance.await(),
             mouthWidth = findMouseWeightTask.await(),
-            noseAndMouseDistance = findNoseAndMouseDistanceTask.await(),
+            noseAndMouthDistance = findNoseAndMouseDistanceTask.await(),
             lEyeAndNoseDistance = findLEyeAndNoseDistanceTask.await(),
             rEyeAndNoseDistance = findREyeAndNoseDistanceTask.await(),
         )
