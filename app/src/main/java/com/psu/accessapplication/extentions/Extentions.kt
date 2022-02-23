@@ -91,8 +91,10 @@ fun FaceModel.compare(face: FaceModel): Double {
     rEyeAndMouthDistance.compareAttributeWith(face.rEyeAndMouthDistance, result = resultAction)
     faceWidth.compareAttributeWith(face.faceWidth, result = resultAction)
     faceHeight.compareAttributeWith(face.faceHeight, result = resultAction)
+
     if (steps == 0)
         return 0.0
+
     return 100 - abs((1 - (percentageOfSimilarity / steps))) * 100
 }
 
