@@ -8,4 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="photoViewColor">#8C44FF</color>
+    <color name="loaderColor">@color/black</color>
 </resources>

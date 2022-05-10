@@ -23,11 +23,7 @@ class PersonItem(val model: Person, private val loader: RequestManager) : BaseBi
     override fun PersonCardBinding.bind() {
         userName.text = "Имя: ${model.firstName}"
         userSecondName.text = "Фамилия ${model.secondName}"
-        root.doWhileAttached {
-            imageLoaderProgressView.visible()
-            userPhoto.loadImage(model.personImageUrl)
-            imageLoaderProgressView.gone()
-        }
+        userPhoto.loadImage(model.personImageUrl)
     }
 
     override fun PersonCardBinding.unbind() {

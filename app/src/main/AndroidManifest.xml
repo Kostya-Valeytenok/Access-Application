@@ -41,6 +41,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
 
+        <activity
+            android:name=".AnalyzeActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/LoaderTheme" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.psu.accessapplication.provider"

@@ -139,6 +139,14 @@ fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerC
     }
 }
 
+fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerContractNullable(
+    fragment: Fragment,
+    callback: (Result: Result?) -> Unit
+): ActivityResultLauncher<Input> {
+    return fragment.registerForActivityResult(this, callback)
+}
+
+
 fun <T> T?.notNull(): Boolean {
     return this != null
 }

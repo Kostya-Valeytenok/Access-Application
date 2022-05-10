@@ -1,7 +1,6 @@
 package com.psu.accessapplication.ui.dashboard
 
 import android.graphics.Bitmap
-import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,29 +8,28 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.launch
-import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import com.psu.accessapplication.AnalyzeActivity
 import com.psu.accessapplication.ChoosePictureActivity
 import com.psu.accessapplication.databinding.FragmentDashboardBinding
 import com.psu.accessapplication.extentions.*
-import com.psu.accessapplication.model.Person
+import com.psu.accessapplication.model.AnalyzeResult
+import com.psu.accessapplication.model.Failure
+import com.psu.accessapplication.model.Successful
 import com.psu.accessapplication.tools.DownloadManager
 import com.psu.accessapplication.tools.EmptyInputResultContract
+import com.psu.accessapplication.tools.ResultContract
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardFragment : Fragment() {
 
-    var currentPhotoPath: String = ""
     val imageUrl =
         "https://www.meme-arsenal.com/memes/b08d2860e80a1e124997a1fc0b16093a.jpg"
-    private val viewModel: DashboardViewModel by viewModels()
     private var _binding: FragmentDashboardBinding? = null
     @Inject
     lateinit var downloadManager: DownloadManager
@@ -42,53 +40,20 @@ class DashboardFragment : Fragment() {
     var uriT: Uri? = null
     lateinit var imageLoadJob: Deferred<Result<Bitmap>>
 
-    val imagePicker =
-        EmptyInputResultContract<Uri>(ChoosePictureActivity::class.java).registerContract(this) {
-            launch {
-                val image = uploadImageFromUri(it, requireContext())
-                launch {
-                    val person = viewModel.chekUser(image)
-                    if (person == null) showErrorMessage()
-                    else {
-                        showFindMessage(person)
-                        binding.personPhoto.loadImage(person.personImageUrl)
-                    }
-                }
-                updateUI {
-                    if (image.notNull()) {
-                        binding.photoView.invisible()
-                    } else binding.photoView.visible()
-                }
+    private val imagePicker = EmptyInputResultContract<Uri>(ChoosePictureActivity::class.java).registerContract(this) {
+        binding.photoView.invisible()
+        photoAnalyzer.launch(it)
+    }
+
+    private val photoAnalyzer = ResultContract<Uri,AnalyzeResult>(AnalyzeActivity::class.java).registerContract(this){
+        launch {
+            if(it is Successful){
+                showFindMessage(it)
+                binding.personPhoto.loadImage(it.person.personImageUrl)
+            }else{
+                showErrorMessage((it as Failure).massage?:"NOT FIND ERROR")
             }
         }
-
-    fun checkBitmap(uri: Uri, bitmap: Bitmap?): Bitmap? {
-        if (bitmap == null) return null
-        return checkRotation(uri, bitmap)
-    }
-
-    private fun checkRotation(uri: Uri, bitmap: Bitmap): Bitmap? {
-        val ei = ExifInterface(uri.path!!)
-        val orientation: Int = ei.getAttributeInt(
-            ExifInterface.TAG_ORIENTATION,
-            ExifInterface.ORIENTATION_NORMAL
-        )
-        return when (orientation) {
-            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90F)
-            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180F)
-            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270F)
-            else -> bitmap
-        }
-    }
-
-    private fun rotateImage(source: Bitmap, angle: Float): Bitmap? {
-        val matrix = Matrix()
-        matrix.postRotate(angle)
-        return Bitmap.createBitmap(source, 0, 0, source.width, source.height, matrix, false)
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
     }
 
     override fun onCreateView(
@@ -99,7 +64,6 @@ class DashboardFragment : Fragment() {
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
-        imageLoadJob = async { return@async downloadManager.downLoadImage(imageUrl) }
         return root
     }
 
@@ -119,15 +83,13 @@ class DashboardFragment : Fragment() {
                   }
                   .onFailure { println(it) }
           }*/
-        launch {
-            binding.progressBar.subscribeOnWorkingStatus(viewModel.loadingStatus)
-        }
     }
 
-    private suspend fun showFindMessage(person: Person) = withContext(Dispatchers.Main) {
+    private suspend fun showFindMessage(result: Successful) = withContext(Dispatchers.Main) {
+        val person = result.person
         Toast.makeText(
             requireContext(),
-            "FIND: ${person.firstName} ${person.secondName}", Toast.LENGTH_LONG
+            "FIND: ${person.firstName} ${person.secondName} - ${result.similarity}%", Toast.LENGTH_LONG
         ).show()
     }
 

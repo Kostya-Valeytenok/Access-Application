@@ -7,10 +7,9 @@ import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetector
 import com.psu.accessapplication.extentions.compare
 import com.psu.accessapplication.extentions.nullableToResult
-import com.psu.accessapplication.tools.AnalyzeError
 import com.psu.accessapplication.tools.CoroutineWorker
 import com.psu.accessapplication.tools.ImageTransformManager
-import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
 
@@ -33,11 +32,18 @@ class VerificationCore @Inject constructor(
         detector.process(image).addOnSuccessListener { faces ->
             println("step 1 bas image was analyzed")
 
-            faces.first().allContours.forEach {
-                points.addAll(it.points)
-            }
-            CoroutineWorker.launch {
-                result.complete(personPhoto.transformImageToFaceImage(points))
+            runCatching {
+                faces.first().allContours.forEach {
+                    points.addAll(it.points)
+                }
+            }.onSuccess {
+                CoroutineWorker.launch {
+                    runCatching { personPhoto.transformImageToFaceImage(points) }
+                        .onSuccess { result.complete(it) }
+                        .onFailure { result.complete(Result.failure(it)) }
+                }
+            }.onFailure {
+                result.complete(Result.failure(it))
             }
         }.addOnFailureListener {
             result.complete(Result.failure(it))
@@ -57,8 +63,8 @@ class VerificationCore @Inject constructor(
         return result
     }
 
-    suspend fun findPerson(personPhoto: Bitmap, persons: List<Person>): MutableSharedFlow<Result<Person>> {
-        val result = MutableSharedFlow<Result<Person>>()
+    suspend fun findPerson(personPhoto: Bitmap, persons: List<Person>): MutableSharedFlow<AnalyzeResult> {
+        val result = MutableSharedFlow<AnalyzeResult>()
         val image = InputImage.fromBitmap(personPhoto, 0)
         detector.process(image).addOnSuccessListener { faces ->
             println("analyze Image \n")
@@ -74,11 +80,11 @@ class VerificationCore @Inject constructor(
                     .analyze()
                     .findThisPerson(persons)
                 println("end")
-                result.emit(person.nullableToResult())
+                result.emit(person)
             }
         }.addOnFailureListener {
             println("Transformed image Analyze Error")
-            CoroutineWorker.launch { result.emit(Result.failure(AnalyzeError())) }
+            CoroutineWorker.launch { result.emit(Failure("Transformed image Analyze Error")) }
         }
 
         return result
@@ -93,10 +99,10 @@ class VerificationCore @Inject constructor(
         return face
     }
 
-    private suspend fun FaceModel.findThisPerson(persons: List<Person>): Person? {
+    private suspend fun FaceModel.findThisPerson(persons: List<Person>): AnalyzeResult {
         val job = Job()
         job.start()
-        var person: Person? = null
+        var person: Successful? = null
         val jobScope = CoroutineWorker.getChild()
         val result = mutableListOf<Pair<Double, Person>>()
         val taskList = compareWithPersons(scope = jobScope, persons = persons)
@@ -117,7 +123,7 @@ class VerificationCore @Inject constructor(
 
     private suspend fun MutableList<Deferred<Pair<Double, Person>>>.waitForResult(
         jobScope: CoroutineScope,
-        findAction: (Person) -> Unit,
+        findAction: (Successful) -> Unit,
         job: CompletableJob
     ): MutableList<Pair<Double, Person>> {
         val result = mutableListOf<Pair<Double, Person>>()
@@ -127,7 +133,7 @@ class VerificationCore @Inject constructor(
             if (compareResult.first >= Algorithm_Absolytly_Accuracy_Persentre) {
                 println("FIND PERSON")
                 job.complete()
-                findAction.invoke(compareResult.second)
+                findAction.invoke(Successful(similarity = compareResult.first, person = compareResult.second))
                 jobScope.cancel()
                 return@forEach
             }
@@ -136,12 +142,14 @@ class VerificationCore @Inject constructor(
         return result
     }
 
-    private fun List<Pair<Double, Person>>.findPersonWithBestSimilarity(): Person? {
+    private fun List<Pair<Double, Person>>.findPersonWithBestSimilarity(): AnalyzeResult {
         val sortedList = sortedBy { it.first }
         sortedList.forEach {
             println("Similarity: ${it.first} person: ${it.second.id}")
         }
-        return filter { it.first >= Algorithm_Accuracy_Persentre }.maxByOrNull { it.first }?.second
+        val result = filter { it.first >= Algorithm_Accuracy_Persentre }.maxByOrNull { it.first }
+        return if(result == null)  Failure("Not Find")
+        else Successful(similarity = result.first, person = result.second)
     }
 
     private suspend fun Bitmap.transformImageToFaceImage(points: MutableList<PointF>): Result<Bitmap> {
