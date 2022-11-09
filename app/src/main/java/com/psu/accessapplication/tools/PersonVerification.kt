@@ -3,13 +3,15 @@ package com.psu.accessapplication.tools
 import android.graphics.Bitmap
 import com.psu.accessapplication.extentions.asyncJob
 import com.psu.accessapplication.extentions.nullableToResult
-import com.psu.accessapplication.model.*
+import com.psu.accessapplication.model.AnalyzeResult
+import com.psu.accessapplication.model.FaceModel
+import com.psu.accessapplication.model.Failure
+import com.psu.accessapplication.model.Person
+import com.psu.accessapplication.model.VerificationCore
 import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.flow.*
-import javax.inject.Inject
-import javax.inject.Singleton
+import kotlinx.coroutines.flow.firstOrNull
 
-class PersonVerification @Inject constructor(val core: VerificationCore) {
+class PersonVerification(val core: VerificationCore) {
 
     suspend fun checkPerson(personImage: Bitmap): Deferred<AnalyzeResult> = asyncJob {
         var result: AnalyzeResult = Failure("Not Init")

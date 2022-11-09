@@ -6,7 +6,7 @@ import android.os.Parcelable
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.fragment.app.FragmentActivity
 
-abstract class BaseResultContract<Input, Result : Parcelable>(private val clazz: Class<out FragmentActivity>) : ActivityResultContract<Input, Result>() {
+abstract class BaseResultContract<Input, Result : Parcelable>(private val clazz: Class<out FragmentActivity>) : ActivityResultContract<Input, Result?>() {
     companion object {
         const val KEY_INPUT = "CONTRACT_INPUT"
         const val KEY_RESULT = "CONTRACT_RESULT"

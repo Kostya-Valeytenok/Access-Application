@@ -5,7 +5,6 @@ import android.graphics.Matrix
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.exifinterface.media.ExifInterface
 import com.psu.accessapplication.databinding.LoaderScreenBinding
@@ -14,15 +13,14 @@ import com.psu.accessapplication.extentions.updateUI
 import com.psu.accessapplication.extentions.uploadImageFromUri
 import com.psu.accessapplication.model.AnalyzeResult
 import com.psu.accessapplication.tools.HasContractNullable
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-@AndroidEntryPoint
 open class AnalyzeActivity : AppCompatActivity(), HasContractNullable<Uri, AnalyzeResult> {
 
-    val viewModel by viewModels<AnalyzeViewModel>()
+    private val viewModel:AnalyzeViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

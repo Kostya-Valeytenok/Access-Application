@@ -13,7 +13,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableSharedFlow
 import javax.inject.Inject
 
-class VerificationCore @Inject constructor(
+class VerificationCore (
     private val detector: FaceDetector,
     private val transformManager: ImageTransformManager,
     private val faceModelFactory: FaceModelFactory

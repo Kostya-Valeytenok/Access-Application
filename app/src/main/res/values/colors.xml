@@ -9,4 +9,15 @@
     <color name="white">#FFFFFFFF</color>
     <color name="photoViewColor">#8C44FF</color>
     <color name="loaderColor">@color/black</color>
+
+
+    <color name="colorPrimary">#FAFAFA</color>
+    <color name="colorPrimaryDark">#F5F5F5</color>
+    <color name="colorPrimaryAccent">#E0E0E0</color>
+    <color name="colorAccent">#007991</color>
+    <color name="colorAccentDark">#455a64</color>
+    <color name="colorAccentDarkAlpha60">#99455A64</color>
+    <color name="colorBackground">#FAFAFA</color>
+
+    <color name="colorRipple">#1f000000</color>
 </resources>

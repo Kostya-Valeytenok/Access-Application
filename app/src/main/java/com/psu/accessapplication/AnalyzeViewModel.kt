@@ -8,17 +8,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.psu.accessapplication.domain.VerificationUserUseCase
 import com.psu.accessapplication.model.AnalyzeResult
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class AnalyzeViewModel @Inject constructor() : ViewModel() {
-
-    @Inject
-    lateinit var userVerification: VerificationUserUseCase
-
+class AnalyzeViewModel(private val userVerification: VerificationUserUseCase) : ViewModel() {
 
     suspend fun chekUser(personImage: Bitmap?): AnalyzeResult? = viewModelScope.async {
         if (personImage == null) return@async null

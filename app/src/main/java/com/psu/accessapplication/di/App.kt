@@ -2,6 +2,11 @@ package com.psu.accessapplication.di
 
 import android.app.Application
 import android.content.Context
+import com.psu.accessapplication.demo.functions.FaceRecognition
+import com.psu.accessapplication.di.modules.appModule
+import com.psu.accessapplication.di.modules.faceDetectorOptionsTypeModule
+import com.psu.accessapplication.di.modules.faceRecognitionModule
+import com.psu.accessapplication.di.modules.vmModule
 import com.psu.accessapplication.model.FaceModel
 import com.psu.accessapplication.model.Person
 import com.psu.accessapplication.repository.AppDatabase
@@ -9,15 +14,15 @@ import com.psu.accessapplication.tools.AbstractPreferences
 import com.psu.accessapplication.tools.CoroutineWorker
 import com.psu.accessapplication.tools.PersonDataCache
 import com.psu.accessapplication.tools.Preferences
-import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.launch
-import javax.inject.Inject
+import org.koin.android.ext.android.get
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
+import org.koin.core.context.startKoin
 
-@HiltAndroidApp
 class App : Application() {
 
-    @Inject lateinit var bd: AppDatabase
+    lateinit var bd: AppDatabase
 
     companion object {
         lateinit var instance: Application
@@ -26,6 +31,13 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
+        FaceRecognition.init(this)
+        startKoin {
+            androidLogger()
+            androidContext(applicationContext)
+            modules(listOf(appModule, vmModule, faceRecognitionModule, faceDetectorOptionsTypeModule))
+        }
+        bd = get()
         CoroutineWorker.launch {
             if (Preferences.isFirstLaunch) {
                 Preferences.isFirstLaunch = false
