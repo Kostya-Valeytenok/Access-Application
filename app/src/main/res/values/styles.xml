@@ -10,5 +10,36 @@
         <item name="android:windowBackground">@android:color/transparent</item>
     </style>
 
+    <style name="FaceRecognitionTheme" parent="AppTheme.NoTitleBar">
+        <item name="colorPrimary">#FF6200EE</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">#FF03DAC5</item>
+        <item name="colorOnSecondary">@color/black</item>
+    </style>
+
+    <style name="AppTheme.NoTitleBar" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:statusBarColor">@color/colorAccentDark</item>
+        <item name="drawerArrowStyle">@style/DrawerIcon</item>
+        <item name="android:colorBackground">@color/colorBackground</item>
+        <item name="colorOnSecondary">@color/colorBackground</item>
+        <item name="android:alertDialogTheme">@style/DialogsTheme</item>
+    </style>
+
+    <style name="DialogsTheme" parent="ThemeOverlay.MaterialComponents.Dialog.Alert">
+        <item name="colorPrimary">@color/white</item>
+        <item name="colorOnPrimary">@color/colorAccent</item>
+        <item name="buttonBarButtonStyle">@style/ButtonStyle</item>
+    </style>
+
+    <style name="ButtonStyle" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
+
+    <style name="DrawerIcon" parent="Widget.AppCompat.DrawerArrowToggle">
+        <item name="color">@color/black</item>
+    </style>
 
 </resources>
