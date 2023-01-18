@@ -19,3 +19,7 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Access Application"
 include(":app")
+include(":FaceRecognitionModule")
+include(":InitScript")
+include(":ViewBindingFeature")
+include(":CoroutineCore")

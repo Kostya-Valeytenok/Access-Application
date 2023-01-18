@@ -4,6 +4,7 @@ import android.os.Parcelable
 import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.rainc.facerecognitionmodule.tools.mfra.model.FaceModel
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

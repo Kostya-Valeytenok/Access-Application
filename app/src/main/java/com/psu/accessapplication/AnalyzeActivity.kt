@@ -11,7 +11,7 @@ import com.psu.accessapplication.databinding.LoaderScreenBinding
 import com.psu.accessapplication.extentions.launch
 import com.psu.accessapplication.extentions.updateUI
 import com.psu.accessapplication.extentions.uploadImageFromUri
-import com.psu.accessapplication.model.AnalyzeResult
+import com.rainc.facerecognitionmodule.tools.mfra.model.AnalyzeResult
 import com.psu.accessapplication.tools.HasContractNullable
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -45,7 +45,6 @@ open class AnalyzeActivity : AppCompatActivity(), HasContractNullable<Uri, Analy
                     bitmap = uploadImageFromUri(contractInput, this@AnalyzeActivity)
                 )
             updateUI {
-
                 if (personImage == null) {
                     println("personImage == null")
                     setContractResult(null)

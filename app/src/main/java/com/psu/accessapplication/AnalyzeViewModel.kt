@@ -6,8 +6,8 @@ package com.psu.accessapplication
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.psu.accessapplication.domain.VerificationUserUseCase
-import com.psu.accessapplication.model.AnalyzeResult
+import com.rainc.facerecognitionmodule.tools.mfra.domain.VerificationUserUseCase
+import com.rainc.facerecognitionmodule.tools.mfra.model.AnalyzeResult
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 

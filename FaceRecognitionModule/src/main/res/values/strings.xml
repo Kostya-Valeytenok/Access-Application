@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Access Application</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="validation_dont_smile">Please keep a neutral look</string>
+    <string name="validation_keep_phone_in_front">Please keep your phone in front of your eyes</string>
+    <string name="validation_keep_head_straight">Please keep your head straight and look directly at the camera</string>
+    <string name="do_you_want_to_use_this_image">Do you want to use this image?</string>
+</resources>

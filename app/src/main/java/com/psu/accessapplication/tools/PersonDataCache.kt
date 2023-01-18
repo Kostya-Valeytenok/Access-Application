@@ -1,6 +1,6 @@
 package com.psu.accessapplication.tools
 
-import com.psu.accessapplication.model.Person
+import com.rainc.facerecognitionmodule.tools.mfra.model.Person
 import kotlinx.coroutines.flow.MutableStateFlow
 
 object PersonDataCache {

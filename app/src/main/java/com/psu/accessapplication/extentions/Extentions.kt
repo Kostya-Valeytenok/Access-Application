@@ -4,17 +4,21 @@ import android.app.Application
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.graphics.PointF
 import android.graphics.drawable.Drawable
 import android.net.Uri
+import android.os.Handler
 import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContract
+import androidx.annotation.AnyThread
 import androidx.annotation.DimenRes
 import androidx.core.content.ContextCompat
 import androidx.core.view.doOnAttach
@@ -28,7 +32,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.psu.accessapplication.R
 import com.psu.accessapplication.di.App
-import com.psu.accessapplication.model.FaceModel
+import com.rainc.facerecognitionmodule.tools.mfra.model.FaceModel
 import kotlinx.coroutines.*
 import java.io.IOException
 import kotlin.coroutines.CoroutineContext
@@ -37,6 +41,7 @@ import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.math.sqrt
 import kotlin.reflect.KClass
+
 
 fun Fragment.launch(
     context: CoroutineContext = EmptyCoroutineContext,
@@ -123,7 +128,7 @@ fun uploadImageFromUri(uri: Uri?, context: Context): Bitmap? {
     return bitmap
 }
 
-fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerContract(activity: FragmentActivity, callback: (Result: Result) -> Unit): ActivityResultLauncher<Input> {
+fun <Input, Result : Parcelable> ActivityResultContract<Input, Result?>.registerContract(activity: FragmentActivity, callback: (Result: Result) -> Unit): ActivityResultLauncher<Input> {
     return activity.registerForActivityResult(this) {
         if (it != null) {
             callback.invoke(it)
@@ -131,7 +136,7 @@ fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerC
     }
 }
 
-fun <Input, Result : Parcelable> ActivityResultContract<Input, Result>.registerContract(fragment: Fragment, callback: (Result: Result) -> Unit): ActivityResultLauncher<Input> {
+fun <Input, Result : Parcelable> ActivityResultContract<Input, Result?>.registerContract(fragment: Fragment, callback: (Result: Result) -> Unit): ActivityResultLauncher<Input> {
     return fragment.registerForActivityResult(this) {
         if (it != null) {
             callback.invoke(it)
@@ -151,20 +156,8 @@ fun <T> T?.notNull(): Boolean {
     return this != null
 }
 
-fun View.gone() {
-    this.visibility = View.GONE
-}
-
-fun View.visible() {
-    this.visibility = View.VISIBLE
-}
-
-fun View.invisible() {
-    this.visibility = View.INVISIBLE
-}
-
 val application: Application
-    get() = App.instance
+    get() = App.application
 
 inline fun <Binding : ViewBinding> KClass<Binding>.inflate(inflater: LayoutInflater, parent: ViewGroup?, attachToRoot: Boolean): Binding {
     return java.getMethod("inflate", LayoutInflater::class.java, ViewGroup::class.java, Boolean::class.java).invoke(null, inflater, parent, attachToRoot) as Binding
@@ -222,3 +215,27 @@ val NoCrashCoroutineExceptionHandler = CoroutineExceptionHandler { coroutineCont
         throwable
     )
 }
+
+@AnyThread
+fun Context.showToast(text: String, duration: Int = Toast.LENGTH_LONG) {
+    Handler(mainLooper).post {
+        Toast.makeText(this, text, duration).show()
+    }
+}
+
+fun Map<String, Boolean>.isGranted(): Boolean {
+    forEach {
+        if (!it.value) {
+            println(it.key + " failed")
+            return false
+        }
+    }
+    return true
+}
+
+fun Bitmap.mirrored(): Bitmap {
+    val matrix =  Matrix();
+    matrix.preScale(-1.0f, 1.0f);
+    return Bitmap.createBitmap(this, 0, 0, width, height, matrix, false)
+}
+

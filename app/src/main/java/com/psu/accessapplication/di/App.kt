@@ -2,14 +2,15 @@ package com.psu.accessapplication.di
 
 import android.app.Application
 import android.content.Context
-import com.psu.accessapplication.demo.functions.FaceRecognition
 import com.psu.accessapplication.di.modules.appModule
-import com.psu.accessapplication.di.modules.faceDetectorOptionsTypeModule
-import com.psu.accessapplication.di.modules.faceRecognitionModule
-import com.psu.accessapplication.di.modules.initializedModule
 import com.psu.accessapplication.di.modules.vmModule
 import com.psu.accessapplication.tools.AbstractPreferences
 import com.psu.accessapplication.tools.initializer.Initializer
+import com.rainc.facerecognitionmodule.di.faceDetectorOptionsTypeModule
+import com.rainc.facerecognitionmodule.di.faceRecognitionInitScriptModule
+import com.rainc.facerecognitionmodule.di.faceRecognitionModule
+import com.rainc.facerecognitionmodule.di.mfraModule
+import com.rainc.facerecognitionmodule.functions.FaceRecognition
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -28,11 +29,12 @@ class App : Application() {
             androidLogger()
             androidContext(applicationContext)
             modules(listOf(
-                initializedModule,
                 appModule,
                 vmModule,
                 faceRecognitionModule,
-                faceDetectorOptionsTypeModule))
+                faceDetectorOptionsTypeModule,
+                faceRecognitionInitScriptModule,
+                mfraModule))
         }
 
         Initializer.runInitScripts()

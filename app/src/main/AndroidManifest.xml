@@ -46,6 +46,11 @@
             android:screenOrientation="portrait"
             android:theme="@style/LoaderTheme" />
 
+        <activity
+            android:name="com.rainc.facerecognitionmodule.activity.FaceRecognitionActivity"
+            android:theme="@style/FaceRecognitionTheme"
+            android:screenOrientation="portrait" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="com.psu.accessapplication.provider"

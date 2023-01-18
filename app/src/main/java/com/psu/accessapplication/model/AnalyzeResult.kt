@@ -1,6 +1,8 @@
 package com.psu.accessapplication.model
 
 import android.os.Parcelable
+import com.rainc.facerecognitionmodule.tools.mfra.model.AnalyzeResult
+import com.rainc.facerecognitionmodule.tools.mfra.model.Person
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

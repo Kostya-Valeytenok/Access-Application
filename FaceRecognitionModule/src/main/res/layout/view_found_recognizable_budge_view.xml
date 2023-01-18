@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	tools:background="@drawable/background_found_recognizable_budge_view"
+	tools:layout_height="wrap_content"
+	tools:layout_width="50dp"
+	tools:orientation="vertical"
+	tools:parentTag="com.psu.accessapplication.tools.SquareFrameLayout">
+
+	<TextView
+		android:id="@+id/budge_text"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="center"
+		android:textColor="@android:color/white"
+		android:textSize="20sp"
+		tools:text="1" />
+</merge>

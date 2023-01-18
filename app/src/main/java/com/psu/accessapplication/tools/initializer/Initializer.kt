@@ -1,5 +1,7 @@
 package com.psu.accessapplication.tools.initializer
 
+import com.rainc.facerecognitionmodule.tools.InitDefaultFacesDataScript
+import com.rainc.initscript.InitScript
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch

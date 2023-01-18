@@ -1,5 +1,7 @@
 package com.psu.accessapplication.ui.dashboard
 
+import android.app.Activity.RESULT_OK
+import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
@@ -7,32 +9,40 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.launch
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.psu.accessapplication.AnalyzeActivity
 import com.psu.accessapplication.ChoosePictureActivity
 import com.psu.accessapplication.databinding.FragmentDashboardBinding
-import com.psu.accessapplication.extentions.*
-import com.psu.accessapplication.model.AnalyzeResult
-import com.psu.accessapplication.model.Failure
-import com.psu.accessapplication.model.Successful
+import com.psu.accessapplication.extentions.launch
+import com.psu.accessapplication.extentions.loadImage
+import com.psu.accessapplication.extentions.registerContract
+import com.psu.accessapplication.extentions.updateUI
+import com.psu.accessapplication.extentions.uploadImageFromUri
+import com.rainc.facerecognitionmodule.tools.mfra.model.AnalyzeResult
+import com.rainc.facerecognitionmodule.tools.mfra.model.Failure
+import com.rainc.facerecognitionmodule.tools.mfra.model.Successful
 import com.psu.accessapplication.tools.DownloadManager
 import com.psu.accessapplication.tools.EmptyInputResultContract
 import com.psu.accessapplication.tools.ResultContract
-import dagger.hilt.android.AndroidEntryPoint
+import com.rainc.facerecognitionmodule.activity.FaceRecognitionActivity
+import com.rainc.facerecognitionmodule.dialog.AddRecognizableBottomSheetDialog
+import com.rainc.facerecognitionmodule.functions.RecognitionActivityResult
+import com.rainc.facerecognitionmodule.tools.ImageCache
+import com.rainc.facerecognitionmodule.tools.PersonDataSerializer.encodeToString
+import com.sap.virtualcoop.mobileapp.helper.extension.invisible
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
 
-@AndroidEntryPoint
+
 class DashboardFragment : Fragment() {
 
     val imageUrl =
         "https://www.meme-arsenal.com/memes/b08d2860e80a1e124997a1fc0b16093a.jpg"
     private var _binding: FragmentDashboardBinding? = null
-    @Inject
-    lateinit var downloadManager: DownloadManager
+    val downloadManager: DownloadManager by inject()
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -45,7 +55,12 @@ class DashboardFragment : Fragment() {
         photoAnalyzer.launch(it)
     }
 
-    private val photoAnalyzer = ResultContract<Uri,AnalyzeResult>(AnalyzeActivity::class.java).registerContract(this){
+    private val fra = EmptyInputResultContract<Intent>(FaceRecognitionActivity::class.java).registerContract(this){
+       val result = FaceRecognitionActivity.resultFromIntent(it)
+       println(result)
+    }
+
+    private val photoAnalyzer = ResultContract<Uri, AnalyzeResult>(AnalyzeActivity::class.java).registerContract(this){
         launch {
             if(it is Successful){
                 showFindMessage(it)
@@ -67,10 +82,43 @@ class DashboardFragment : Fragment() {
         return root
     }
 
+    private val faceRecognitionActivityLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
+        if(it.resultCode != RESULT_OK) return@registerForActivityResult
+        val data = it.data ?: return@registerForActivityResult
+
+        val result: RecognitionActivityResult? = FaceRecognitionActivity.resultFromIntent(data)
+        if (result is RecognitionActivityResult.NewRecognizable) {
+            val newRecognizable: RecognitionActivityResult.NewRecognizable = result
+            val recognizableData: FloatArray = newRecognizable.data
+
+            val picture: Uri = newRecognizable.picturePath
+
+            println("recognizableData: $recognizableData")
+            println("picture: $picture")
+            println("img: ${uploadImageFromUri(picture, requireContext())}")
+
+            launch(Dispatchers.Default) {
+                val cacheId = recognizableData.contentHashCode()
+
+                ImageCache.imageCache[cacheId] = ImageCache.ImageCacheItem(
+                    data = recognizableData,
+                    photo = uploadImageFromUri(
+                        picture,
+                        requireContext()
+                    )?.encodeToString()
+                )
+
+                showAddRecognizableBottomSheetDialog(personDataId = cacheId)
+            }
+        }
+
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding?.photoView?.setOnClickListener {
-            imagePicker.launch()
+        binding.addPersonButton.setOnClickListener { recognition(FaceRecognitionActivity.InputParams.CaptureNewImage()) }
+        binding.analyzeFaceButton.setOnClickListener {
+            recognition(FaceRecognitionActivity.InputParams.Recognition())
         }
         /*  launch {
               imageLoadJob.await()
@@ -83,6 +131,17 @@ class DashboardFragment : Fragment() {
                   }
                   .onFailure { println(it) }
           }*/
+    }
+
+    fun recognition(inputParams: FaceRecognitionActivity.InputParams){
+        faceRecognitionActivityLauncher.launch(FaceRecognitionActivity.getLaunchIntent(requireContext(), inputParams))
+    }
+
+    suspend fun showAddRecognizableBottomSheetDialog(personDataId:Int){
+        updateUI {
+            AddRecognizableBottomSheetDialog.newInstance(personDataId = personDataId)
+                .show(childFragmentManager, personDataId.toString())
+        }
     }
 
     private suspend fun showFindMessage(result: Successful) = withContext(Dispatchers.Main) {
