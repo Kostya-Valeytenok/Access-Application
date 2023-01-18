@@ -21,3 +21,17 @@ interface HasContract<Input : Parcelable, Result : Parcelable> {
         fragmentActivity.finish()
     }
 }
+
+interface HasContractNullable<Input : Parcelable, Result : Parcelable?> {
+    val contractInput: Input
+        get() {
+            val fragmentActivity = this as FragmentActivity
+            return fragmentActivity.intent.getParcelableExtra(KEY_INPUT)!!
+        }
+
+    fun setContractResult(result: Result?) {
+        val fragmentActivity = this as FragmentActivity
+        fragmentActivity.setResult(Activity.RESULT_OK, Intent().putExtra(KEY_RESULT, result))
+        fragmentActivity.finish()
+    }
+}

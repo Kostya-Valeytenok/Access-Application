@@ -6,24 +6,25 @@ import com.bumptech.glide.RequestManager
 import com.psu.accessapplication.extentions.asyncJob
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.coroutineScope
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.math.abs
 
-@Singleton
-class ImageTransformManager @Inject constructor (private val imageLoader: RequestManager) {
+class ImageTransformManager(private val imageLoader: RequestManager) {
 
     private suspend fun Bitmap.resizeImage(size: Int = 200): Result<Bitmap> {
         return asyncJob {
             return@asyncJob runCatching {
-                imageLoader
-                    .asBitmap()
-                    .load(this)
-                    .fitCenter()
-                    .override(size)
-                    .submit().get()
+                resize(image = this, newSize = 200)
             }
         }.await()
+    }
+
+    fun resize(image: Bitmap, newSize:Int): Bitmap {
+        return imageLoader
+            .asBitmap()
+            .load(image)
+            .fitCenter()
+            .override(newSize)
+            .submit().get()
     }
 
     suspend fun transformImageToFaceImage(personPhoto: Bitmap, points: MutableList<PointF>): Result<Bitmap> = coroutineScope {

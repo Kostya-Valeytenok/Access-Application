@@ -1,5 +1,9 @@
 package com.psu.accessapplication.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class FaceModel(
     val eyesDistance: Double? = null,
     val lEyeAndMouthDistance: Double? = null,
@@ -10,7 +14,7 @@ data class FaceModel(
     val rEyeAndNoseDistance: Double? = null,
     val faceHeight: Double? = null,
     val faceWidth: Double? = null
-) {
+) : Parcelable {
     val modelData: String
         get() = """
             FACE ATTRIBUTES: 

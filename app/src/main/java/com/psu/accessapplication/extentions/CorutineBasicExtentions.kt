@@ -1,11 +1,16 @@
 package com.psu.accessapplication.extentions
 
 import android.view.View
-import kotlinx.coroutines.* // ktlint-disable no-wildcard-imports
+import com.sap.virtualcoop.mobileapp.helper.extension.gone
+import com.sap.virtualcoop.mobileapp.helper.extension.visible
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
-import java.lang.NullPointerException
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 suspend fun <T> asyncJob(job: suspend () -> T): Deferred<T> = withContext(Dispatchers.Default) {
     return@withContext async { return@async job.invoke() }
@@ -17,6 +22,10 @@ suspend fun <T> launchJob(job: suspend () -> Unit) = withContext(Dispatchers.Def
 
 suspend fun updateUI(job: suspend () -> Unit) = withContext(Dispatchers.Main) {
     job.invoke()
+}
+
+suspend fun updateUISafe(job: suspend () -> Unit) = withContext(Dispatchers.Main) {
+    runCatching { job.invoke() }
 }
 
 suspend inline fun <T> Flow<T>.collectOnce(crossinline collectAction: suspend (T) -> Unit): Job = withContext(Dispatchers.Default) {
@@ -46,3 +55,4 @@ suspend fun View.subscribeOnWorkingStatus(loadingStatus: MutableStateFlow<Boolea
         else updateUI { this.gone() }
     }
 }
+
