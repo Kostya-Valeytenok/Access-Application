@@ -1,10 +1,10 @@
-package com.psu.accessapplication.tools
+package com.rainc.viewbindingcore.tools
 
 import android.content.Context
 import androidx.annotation.DimenRes
-import com.psu.accessapplication.extentions.convertDpToPixel
-import com.psu.accessapplication.extentions.convertSpToPixel
-import com.psu.accessapplication.extentions.getDimension
+import com.rainc.viewbindingcore.extension.convertDpToPixel
+import com.rainc.viewbindingcore.extension.convertSpToPixel
+import com.rainc.viewbindingcore.extension.getDimension
 import kotlin.math.roundToInt
 
 sealed class Dimension {

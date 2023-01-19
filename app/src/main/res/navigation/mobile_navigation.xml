@@ -5,17 +5,10 @@
     android:id="@+id/mobile_navigation"
     app:startDestination="@+id/navigation_home">
 
-
-    <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.psu.accessapplication.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
-
     <fragment
         android:id="@+id/navigation_home"
         android:name="com.psu.accessapplication.ui.home.HomeFragment"
-        android:label="@string/title_home"
+        android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_home" />
 
 </navigation>

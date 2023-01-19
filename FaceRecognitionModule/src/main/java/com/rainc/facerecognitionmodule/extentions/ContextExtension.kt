@@ -18,23 +18,6 @@ val Context.displayMetrics: DisplayMetrics
         return displayMetrics
     }
 
-
-fun Context.convertPxToDp(px: Int): Int {
-    return (px / resources.displayMetrics.density).roundToInt()
-}
-
-fun Context.convertDpToPixel(dp: Int): Int {
-    return (dp * resources.displayMetrics.density).roundToInt()
-}
-
-fun Context.convertSpToPixel(sp: Int): Int {
-    return (sp * resources.displayMetrics.scaledDensity).roundToInt()
-}
-
-fun Context.getDimension(@DimenRes dimen: Int): Float {
-    return resources.getDimension(dimen)
-}
-
 @AnyThread
 fun Context.showToast(text: String, duration: Int = Toast.LENGTH_LONG) {
     Handler(mainLooper).post {

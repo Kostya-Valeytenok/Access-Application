@@ -1,11 +1,10 @@
-package com.psu.accessapplication.items
+package com.rainc.viewbindingcore.item
 
 import androidx.core.view.updateLayoutParams
 import androidx.recyclerview.widget.RecyclerView
-import com.psu.accessapplication.R
-import com.psu.accessapplication.databinding.ItemSpaceBinding
-import com.psu.accessapplication.tools.BaseBindingItem
-import com.psu.accessapplication.tools.Dimension
+import com.rainc.viewbindingcore.R
+import com.rainc.viewbindingcore.databinding.ItemSpaceBinding
+import com.rainc.viewbindingcore.tools.Dimension
 
 class SpaceItem(val space: Dimension) : BaseBindingItem<ItemSpaceBinding>(ItemSpaceBinding::class) {
     override val type: Int = R.id.is_space

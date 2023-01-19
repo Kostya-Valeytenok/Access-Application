@@ -9,15 +9,14 @@ import androidx.core.view.doOnDetach
 import androidx.fragment.app.FragmentManager
 import com.rainc.coroutinecore.extension.doWhileAttached
 import com.rainc.coroutinecore.extension.updateUI
-import com.rainc.facerecognitionmodule.databinding.PersonCardBinding
 import com.rainc.facerecognitionmodule.databinding.PersonCardViewBinding
-import com.rainc.facerecognitionmodule.functions.PersonData
 import com.rainc.facerecognitionmodule.dialog.QRCodeDialog
-import com.rainc.facerecognitionmodule.extentions.convertDpToPixel
 import com.rainc.facerecognitionmodule.extentions.decodePersonDataFromSting
 import com.rainc.facerecognitionmodule.extentions.displayMetrics
 import com.rainc.facerecognitionmodule.extentions.mirrored
+import com.rainc.facerecognitionmodule.functions.PersonData
 import com.rainc.facerecognitionmodule.tools.PersonDataSerializer.serializeForQRCode
+import com.rainc.viewbindingcore.extension.convertDpToPixel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -26,14 +25,14 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import net.glxn.qrgen.android.QRCode
 
-class PersonCardView  @JvmOverloads constructor(
+internal class PersonCardView  @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0,
 ) : CardView(context, attrs, defStyleAttr) {
 
     private val binding = PersonCardViewBinding.inflate(LayoutInflater.from(context),  this)
-
+    private val personDataModelState = MutableStateFlow<PersonData?>(null)
     private val fullNameStateFlow = MutableStateFlow("dafault")
     private val photoDataMutableStateData = MutableStateFlow<String?>(null)
     private val personData = MutableStateFlow(FloatArray(0))
@@ -43,6 +42,9 @@ class PersonCardView  @JvmOverloads constructor(
 
     var onDialogShowRequest :(() ->FragmentManager)? = null
 
+    fun setPersonModel(model:PersonData){
+        personDataModelState.tryEmit(model)
+    }
     suspend fun setPersonData(data:FloatArray) = withContext(Dispatchers.Default){
         personData.emit(data)
     }
@@ -66,6 +68,17 @@ class PersonCardView  @JvmOverloads constructor(
         radius = context.convertDpToPixel(20).toFloat()
 
         doWhileAttached {
+            launch(Dispatchers.Default) {
+                personDataModelState.filterNotNull().collect{
+                    withContext(Dispatchers.Default){
+                        launch { setUserId(id = it.id.toInt()) }
+                        launch { setPhotoData(photoData = it.photo) }
+                        launch { setPersonData(data = it.data) }
+                        launch { setFullName(name = it.fullName) }
+                    }
+                }
+
+            }
             launch(Dispatchers.Default){
                 photoDataMutableStateData.filterNotNull().collect{ photoData ->
                     updateUI {  }
