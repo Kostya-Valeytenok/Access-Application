@@ -1,0 +1,3 @@
+package com.rainc.cryptoserialization.model
+
+interface EncryptedModel

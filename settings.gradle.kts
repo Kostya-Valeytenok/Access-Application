@@ -19,7 +19,15 @@ dependencyResolutionManagement {
 }
 rootProject.name = "Access Application"
 include(":app")
-include(":FaceRecognitionModule")
-include(":InitScript")
-include(":ViewBindingFeature")
+include(":FaceRecognition")
 include(":CoroutineCore")
+include(":FaceRecognition:core:initScript")
+include(":FaceRecognition:core:crypto")
+include(":FaceRecognition:core:base64Tools")
+include(":FaceRecognition:core:keyProvider")
+include(":FaceRecognition:core:cryptoKeyGenerator")
+include(":FaceRecognition:core:random")
+include(":FaceRecognition:core:coroutines")
+include(":FaceRecognition:core:serialization")
+include(":FaceRecognition:core:viewBinding")
+include(":FaceRecognition:core:cryptoSerialization")

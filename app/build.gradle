@@ -3,6 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
+    id "org.jetbrains.kotlin.plugin.serialization"
 }
 
 android {
@@ -10,8 +11,9 @@ android {
 
     defaultConfig {
         applicationId "com.psu.accessapplication"
-        minSdk 24
+        minSdk 28
         targetSdk 33
+        compileSdkPreview  "UpsideDownCake"
         versionCode 1
         versionName "1.0"
 
@@ -100,7 +102,8 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-runtime-ktx:2.5.1")
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
-    implementation project(":FaceRecognitionModule")
-    implementation(project(":ViewBindingFeature"))
-    implementation(project(":InitScript"))
+    implementation project(":FaceRecognition")
+    implementation(project(":FaceRecognition:core:viewBinding"))
+    implementation(project(":FaceRecognition:core:initScript"))
+    implementation(project(":FaceRecognition:core:serialization"))
 }

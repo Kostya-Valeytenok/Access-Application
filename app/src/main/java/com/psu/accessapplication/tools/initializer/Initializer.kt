@@ -11,7 +11,7 @@ import org.koin.core.component.get
 
 object Initializer : KoinComponent {
 
-    private val scripts = buildList<InitScript>{
+    private val scripts = buildList<com.rainc.initscript.InitScript>{
         add(this@Initializer.get<InitDefaultFacesDataScript>())
     }
 

@@ -11,6 +11,9 @@ import com.rainc.facerecognitionmodule.di.faceRecognitionInitScriptModule
 import com.rainc.facerecognitionmodule.di.faceRecognitionModule
 import com.rainc.facerecognitionmodule.di.mfraModule
 import com.rainc.facerecognitionmodule.functions.FaceRecognition
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.startKoin
@@ -28,13 +31,15 @@ class App : Application() {
         startKoin {
             androidLogger()
             androidContext(applicationContext)
+
             modules(listOf(
                 appModule,
                 vmModule,
                 faceRecognitionModule,
                 faceDetectorOptionsTypeModule,
                 faceRecognitionInitScriptModule,
-                mfraModule))
+                mfraModule)
+            )
         }
 
         Initializer.runInitScripts()
