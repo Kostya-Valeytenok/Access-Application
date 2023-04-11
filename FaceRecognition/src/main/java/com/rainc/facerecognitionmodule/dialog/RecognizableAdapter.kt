@@ -7,7 +7,7 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.rainc.facerecognitionmodule.R
-import com.rainc.facerecognitionmodule.functions.Recognizable
+import com.rainc.recognitionsource.model.Recognizable
 
 class RecognizableAdapter(private val recognizable: List<Recognizable>, private val onClickListener: (item: Recognizable) -> Unit) : RecyclerView.Adapter<RecognizableAdapter.RecognizableItem>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecognizableItem = RecognizableItem(LayoutInflater.from(parent.context)

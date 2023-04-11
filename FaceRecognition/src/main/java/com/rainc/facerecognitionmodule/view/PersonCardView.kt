@@ -14,8 +14,8 @@ import com.rainc.facerecognitionmodule.dialog.QRCodeDialog
 import com.rainc.facerecognitionmodule.extentions.decodePersonDataFromSting
 import com.rainc.facerecognitionmodule.extentions.displayMetrics
 import com.rainc.facerecognitionmodule.extentions.mirrored
-import com.rainc.facerecognitionmodule.functions.PersonData
-import com.rainc.facerecognitionmodule.tools.PersonDataSerializer.serializeForQRCode
+import com.rainc.recognitionsource.model.PersonData
+import com.rainc.recognitionsource.tools.PersonDataSerializer.serializeForQRCode
 import com.rainc.viewbindingcore.extension.convertDpToPixel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

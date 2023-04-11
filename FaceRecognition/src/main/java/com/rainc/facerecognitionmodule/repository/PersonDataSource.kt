@@ -2,10 +2,8 @@ package com.rainc.facerecognitionmodule.repository
 
 import com.rainc.coroutinecore.tools.CoroutineWorker
 import com.rainc.facerecognitionmodule.functions.FaceRecognition
-import com.rainc.facerecognitionmodule.functions.PersonData
 import com.rainc.facerecognitionmodule.item.PersonItem
-import com.rainc.viewbindingcore.item.SpaceItem
-import com.rainc.viewbindingcore.tools.Dimension
+import com.rainc.recognitionsource.model.PersonData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -25,7 +23,7 @@ object PersonDataSource {
         }
     }
 
-    internal suspend fun upload(personModels:List<PersonData>){
+    suspend fun upload(personModels:List<PersonData>){
         personDataStateFlow.emit(personModels)
     }
 }

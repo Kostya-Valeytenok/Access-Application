@@ -64,8 +64,14 @@ dependencies {
     implementation ("com.google.mlkit:face-detection:16.1.5")
     implementation ("org.tensorflow:tensorflow-lite-support:0.2.0")
     implementation(project(":FaceRecognition:core:initScript"))
-    implementation(project(":CoroutineCore"))
     implementation(project(":FaceRecognition:core:viewBinding"))
+
+    implementation(project(":FaceRecognition:data:recognitionSource"))
+    implementation(project(":FaceRecognition:core:repository"))
+    implementation(project(":FaceRecognition:core:coroutines"))
+    implementation(project(":FaceRecognition:core:cryptoSerialization"))
+
+    implementation ("com.google.guava:guava:31.0.1-android")
 
     implementation("com.github.bumptech.glide:glide:4.14.2")
     kapt("com.github.bumptech.glide:compiler:4.14.2")

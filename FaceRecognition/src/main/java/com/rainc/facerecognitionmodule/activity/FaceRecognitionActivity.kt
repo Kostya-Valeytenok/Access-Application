@@ -23,14 +23,13 @@ import androidx.camera.view.PreviewView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.net.toUri
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.common.util.concurrent.ListenableFuture
 import com.rainc.facerecognitionmodule.R
 import com.rainc.facerecognitionmodule.functions.BoxData
-import com.rainc.facerecognitionmodule.functions.FaceDataResponse
 import com.rainc.facerecognitionmodule.functions.FaceRecognition
 import com.rainc.facerecognitionmodule.functions.RecognitionActivityResult
 import com.rainc.facerecognitionmodule.functions.RecognitionImage
 import com.rainc.facerecognitionmodule.functions.RecognitionResponse
-import com.rainc.facerecognitionmodule.functions.Recognizable
 import com.rainc.facerecognitionmodule.dialog.AddRecognizableDialog
 import com.rainc.facerecognitionmodule.dialog.RecognizableBottomSheet
 import com.rainc.facerecognitionmodule.extentions.gone
@@ -42,6 +41,7 @@ import com.rainc.facerecognitionmodule.tools.YuvToRgbConverter
 import com.rainc.facerecognitionmodule.view.FaceRecognitionGraphic
 import com.rainc.facerecognitionmodule.view.FoundRecognizableBudgeView
 import com.rainc.facerecognitionmodule.view.GraphicOverlay
+import com.rainc.recognitionsource.model.Recognizable
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -51,6 +51,7 @@ import kotlinx.parcelize.Parcelize
 import org.koin.android.ext.android.inject
 import java.io.File
 import java.util.concurrent.Executors
+import com.rainc.recognitionsource.model.FaceDataResponse
 
 /**
  * Activity that can find among recognizable or create new recognizable
@@ -102,8 +103,10 @@ public class FaceRecognitionActivity : AppCompatActivity() {
         OrientationListener()
     }
     private val cameraProvider: ProcessCameraProvider by lazy {
-        ProcessCameraProvider.getInstance(this).get()
+      getCameraProvideR().get()
     }
+
+    fun getCameraProvideR(): ListenableFuture<ProcessCameraProvider> = ProcessCameraProvider.getInstance(this)
 
     private val tempFile: File by lazy {
         File(cacheDir, "TempRecognitionImage.jpg").apply {

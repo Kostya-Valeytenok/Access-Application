@@ -14,34 +14,32 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.mikepenz.fastadapter.FastAdapter
 import com.mikepenz.fastadapter.GenericItem
 import com.mikepenz.fastadapter.adapters.GenericItemAdapter
-import com.psu.accessapplication.AnalyzeActivity
 import com.psu.accessapplication.databinding.FragmentHomeBinding
-import com.rainc.facerecognitionmodule.functions.PersonData
+import com.psu.accessapplication.extentions.createProgressDialog
 import com.psu.accessapplication.extentions.launch
-import com.psu.accessapplication.extentions.loadImage
-import com.psu.accessapplication.extentions.registerContract
 import com.psu.accessapplication.extentions.updateUI
 import com.psu.accessapplication.extentions.uploadImageFromUri
 import com.psu.accessapplication.items.PersonItem
-import com.psu.accessapplication.tools.ResultContract
 import com.rainc.facerecognitionmodule.activity.FaceRecognitionActivity
 import com.rainc.facerecognitionmodule.dialog.AddRecognizableBottomSheetDialog
 import com.rainc.facerecognitionmodule.functions.RecognitionActivityResult
 import com.rainc.facerecognitionmodule.repository.PersonDataSource
 import com.rainc.facerecognitionmodule.tools.ImageCache
-import com.rainc.facerecognitionmodule.tools.PersonDataSerializer.encodeToString
-import com.rainc.facerecognitionmodule.tools.mfra.model.AnalyzeResult
-import com.rainc.facerecognitionmodule.tools.mfra.model.Failure
 import com.rainc.facerecognitionmodule.tools.mfra.model.Successful
+import com.rainc.recognitionsource.RecognitionSourceRepository
+import com.rainc.recognitionsource.model.PersonData
+import com.rainc.recognitionsource.tools.PersonDataSerializer.encodeToString
 import com.rainc.viewbindingcore.item.SpaceItem
 import com.rainc.viewbindingcore.tools.Dimension
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.koin.android.ext.android.inject
 
 @ExperimentalStdlibApi
 class HomeFragment : Fragment() {
 
     private val homeViewModel by viewModels<HomeViewModel>()
+    private val repository: RecognitionSourceRepository by inject()
     private var _binding: FragmentHomeBinding? = null
 
     // This property is only valid between onCreateView and
@@ -148,8 +146,12 @@ class HomeFragment : Fragment() {
 
     private suspend fun showAddRecognizableBottomSheetDialog(personDataId:Int){
         updateUI {
+            val progressDialog = requireActivity().createProgressDialog()
+            progressDialog.show()
             AddRecognizableBottomSheetDialog.newInstance(personDataId = personDataId)
-                .show(childFragmentManager, personDataId.toString())
+                .setOnDismissListener {
+                    progressDialog.dismiss()
+                }.show(childFragmentManager, personDataId.toString())
         }
     }
 

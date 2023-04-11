@@ -3,8 +3,8 @@ package com.psu.accessapplication.items
 import android.annotation.SuppressLint
 import com.psu.accessapplication.R
 import com.psu.accessapplication.databinding.PersonCardBinding
-import com.rainc.facerecognitionmodule.functions.PersonData
 import com.psu.accessapplication.tools.BaseBindingItem
+import com.rainc.recognitionsource.model.PersonData
 
 class PersonItem(val model: PersonData) : BaseBindingItem<PersonCardBinding>(PersonCardBinding::class) {
 

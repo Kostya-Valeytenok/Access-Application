@@ -66,17 +66,27 @@
             app:layout_constraintTop_toBottomOf="@+id/personFullName"
             tools:text="i123423954355" />
 
-        <ImageView
-            android:id="@+id/qrCodeView"
+        <androidx.cardview.widget.CardView
+            app:cardCornerRadius="20dp"
+            android:id="@+id/qrCodeViewShape"
             android:layout_width="wrap_content"
-            android:layout_height="45dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:adjustViewBounds="true"
+
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/personId"
             app:layout_constraintVertical_bias="1.0"
-            tools:srcCompat="@tools:sample/avatars" />
+            >
+
+            <ImageView
+                android:id="@+id/qrCodeView"
+                android:layout_width="wrap_content"
+                android:layout_height="65dp"
+                android:adjustViewBounds="true"
+                tools:srcCompat="@tools:sample/avatars" />
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

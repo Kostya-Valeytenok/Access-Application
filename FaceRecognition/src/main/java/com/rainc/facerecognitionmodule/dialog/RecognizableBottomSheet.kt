@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.rainc.facerecognitionmodule.R
-import com.rainc.facerecognitionmodule.functions.Recognizable
+import com.rainc.recognitionsource.model.Recognizable
 
 class RecognizableBottomSheet(val recognizable: List<Recognizable>, val onClickListener: (item: Recognizable) -> Unit) : BottomSheetDialogFragment() {
     private lateinit var recyclerView: RecyclerView

@@ -1,6 +1,7 @@
 package com.rainc.facerecognitionmodule.functions
 
 import com.google.mlkit.vision.face.Face
+import com.rainc.recognitionsource.model.Recognizable
 
 /**
  * Class that used by [FaceRecognitionGraphic] to draw some overlay

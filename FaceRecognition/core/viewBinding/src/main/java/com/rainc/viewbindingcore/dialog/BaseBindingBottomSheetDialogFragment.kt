@@ -23,8 +23,9 @@ abstract class BaseBindingBottomSheetDialogFragment<T : ViewBinding>(private val
     private var bottomSheetDialog: BottomSheetDialog? = null
     private var onDismissListener: DialogInterface.OnDismissListener? = null
 
-    fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?) {
+    fun setOnDismissListener(onDismissListener: DialogInterface.OnDismissListener?): BaseBindingBottomSheetDialogFragment<T> {
         this.onDismissListener = onDismissListener
+        return this
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {

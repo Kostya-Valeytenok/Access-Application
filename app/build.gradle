@@ -4,6 +4,8 @@ plugins {
     id 'kotlin-kapt'
     id 'kotlin-parcelize'
     id "org.jetbrains.kotlin.plugin.serialization"
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
 }
 
 android {
@@ -106,4 +108,9 @@ dependencies {
     implementation(project(":FaceRecognition:core:viewBinding"))
     implementation(project(":FaceRecognition:core:initScript"))
     implementation(project(":FaceRecognition:core:serialization"))
+    implementation(project(":FaceRecognition:core:serialization"))
+    implementation(project(":FaceRecognition:data:recognitionSource"))
+    implementation(project(":FaceRecognition:core:cryptoSerialization"))
+    implementation(project(":FaceRecognition:core:repository"))
+    implementation(project(":FaceRecognition:core:coroutines"))
 }

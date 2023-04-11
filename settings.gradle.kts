@@ -20,7 +20,6 @@ dependencyResolutionManagement {
 rootProject.name = "Access Application"
 include(":app")
 include(":FaceRecognition")
-include(":CoroutineCore")
 include(":FaceRecognition:core:initScript")
 include(":FaceRecognition:core:crypto")
 include(":FaceRecognition:core:base64Tools")
@@ -31,3 +30,9 @@ include(":FaceRecognition:core:coroutines")
 include(":FaceRecognition:core:serialization")
 include(":FaceRecognition:core:viewBinding")
 include(":FaceRecognition:core:cryptoSerialization")
+include(":FaceRecognition:core:repository")
+include(":FaceRecognition:core:auth")
+include(":FaceRecognition:core:firestore")
+include(":FaceRecognition:core:firebaseGlobal")
+
+include(":FaceRecognition:data:recognitionSource")

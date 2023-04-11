@@ -13,9 +13,11 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.Face
 import com.google.mlkit.vision.face.FaceDetector
 import com.rainc.facerecognitionmodule.R
+import com.rainc.recognitionsource.model.FaceDataResponse
 import com.rainc.facerecognitionmodule.tools.FaceDetectorOptionsType
 import com.rainc.facerecognitionmodule.tools.MobileFaceNet
 import com.rainc.facerecognitionmodule.tools.YuvToRgbConverter
+import com.rainc.recognitionsource.model.Recognizable
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.parameter.parametersOf

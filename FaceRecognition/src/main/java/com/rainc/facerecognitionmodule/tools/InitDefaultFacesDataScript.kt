@@ -1,9 +1,10 @@
 package com.rainc.facerecognitionmodule.tools
 
 import android.content.Context
-import com.rainc.facerecognitionmodule.functions.PersonData
 import com.rainc.facerecognitionmodule.repository.PersonDataSource
 import com.rainc.initscript.InitScript
+import com.rainc.recognitionsource.model.PersonData
+import com.rainc.recognitionsource.tools.PersonDataSerializer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
@@ -21,6 +22,6 @@ class InitDefaultFacesDataScript internal constructor (private val context: Cont
                 }
             }
         }.joinAll()
-        PersonDataSource.upload(personModels = faces.toList())
+       // PersonDataSource.upload(personModels = faces.toList())
     }
 }

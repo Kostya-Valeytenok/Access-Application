@@ -3,29 +3,12 @@ package com.rainc.facerecognitionmodule.extentions
 import android.app.DownloadManager
 import android.content.Context
 import android.graphics.Bitmap
-import android.util.Log
-import android.view.View
-import androidx.core.view.doOnAttach
-import androidx.core.view.doOnDetach
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.lifecycleScope
-import com.rainc.facerecognitionmodule.functions.PersonData
-import com.rainc.facerecognitionmodule.tools.PersonDataSerializer
-import com.rainc.facerecognitionmodule.tools.PersonDataSerializer.serialize
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Deferred
+import com.rainc.recognitionsource.model.PersonData
+import com.rainc.recognitionsource.tools.PersonDataSerializer
+import com.rainc.recognitionsource.tools.PersonDataSerializer.serialize
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.async
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.EmptyCoroutineContext
 
 suspend fun String.decodePersonDataFromSting(): Bitmap = withContext(Dispatchers.Default)  {
     PersonDataSerializer.decodeBitmapFromString(this@decodePersonDataFromSting)

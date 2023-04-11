@@ -1,19 +1,22 @@
 package com.rainc.facerecognitionmodule.dialog
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.core.os.bundleOf
 import androidx.core.widget.addTextChangedListener
 import com.rainc.coroutinecore.extension.launch
 import com.rainc.coroutinecore.extension.updateUISafe
 import com.rainc.coroutinecore.tools.CoroutineWorker
-import com.rainc.facerecognitionmodule.functions.PersonData
 import com.rainc.facerecognitionmodule.databinding.DialogAddRecognizableWithButtonsBinding
 import com.rainc.facerecognitionmodule.extentions.hideKeyboard
 import com.rainc.facerecognitionmodule.extentions.uploadToFile
 import com.rainc.facerecognitionmodule.tools.ImageCache
+import com.rainc.recognitionsource.RecognitionSourceRepository
+import com.rainc.recognitionsource.model.PersonData
 import com.rainc.viewbindingcore.dialog.BaseBindingBottomSheetDialogFragment
 import kotlinx.coroutines.Dispatchers
+import org.koin.android.ext.android.inject
 
 /**
  * Dialog to confirm that user want to use this [previewImage]
@@ -21,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 class AddRecognizableBottomSheetDialog()
     : BaseBindingBottomSheetDialogFragment<DialogAddRecognizableWithButtonsBinding>(DialogAddRecognizableWithButtonsBinding::class) {
 
+    private val repository:RecognitionSourceRepository by inject()
     companion object{
 
         private const val KEY_PERSON_DATA_ID = "PERSON_DATA_ID"
@@ -61,7 +65,12 @@ class AddRecognizableBottomSheetDialog()
                         data = personDataCache.data,
                         photo = personDataCache.photo
                     )
-                    personModel.uploadToFile(requireContext())
+
+                    repository.uploadPersonModel(model = personModel).await()
+                        .onFailure {
+                            Log.e(this::class.java.name,it.localizedMessage?:"Issues", it)
+                        }
+
                     updateUISafe { dismiss() }
                 }
             }
